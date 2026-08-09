@@ -1,0 +1,48 @@
+harper-sk — Slovak dictionary data for Harper
+=============================================
+
+This repository combines two licences, file by file.
+
+
+Dictionary data — Mozilla Public License 2.0
+--------------------------------------------
+
+    data/dictionary.dict
+    data/annotations.json
+
+These files are GENERATED from sk-spell/hunspell-sk
+<https://github.com/sk-spell/hunspell-sk> — the Slovak hunspell dictionary
+created and maintained by Zdenko Podobný and contributors, licensed under
+the Mozilla Public License 2.0.
+
+The generated files are a derivative of that work and remain under MPL-2.0.
+Full licence text: LICENSE-MPL-2.0
+
+The dictionary is the work of the sk-spell project. This repository only
+translates it into the file format Harper expects; it adds no lexical data
+of its own.
+
+
+Generator and build tooling — Apache License 2.0
+------------------------------------------------
+
+    scripts/aff2annotations.py
+    scripts/dic2dict.py
+    Makefile
+
+Copyright 2026 Branislav Klocok.
+Full licence text: LICENSE-APACHE-2.0
+
+Apache-2.0 was chosen for the generator so that it can, if useful, be
+contributed to Harper <https://github.com/Automattic/harper> itself, which
+is Apache-2.0 licensed.
+
+
+On combining the two
+--------------------
+
+MPL-2.0 is a file-level copyleft licence: it governs the files it covers,
+not the whole work it is combined with. The MPL-covered data files stay
+under MPL-2.0 wherever they are redistributed — including inside an
+Apache-2.0 project — provided this notice and the per-file headers travel
+with them. No relicensing of the sk-spell data is performed or required.
