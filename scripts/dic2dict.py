@@ -19,34 +19,36 @@
 # NOTE: this script only *generates* data. The generated dictionary data is
 # derived from sk-spell/hunspell-sk and stays under MPL-2.0 — see NOTICE.
 """
-dic2dict.py — preloží hunspell sk_SK.dic → Harper dictionary.dict (kmene + flagy).
+dic2dict.py — translate hunspell sk_SK.dic into a Harper dictionary.dict
+(stems plus flags).
 
-Vstupný riadok hunspellu:   kmeň[/AFIXFLAGY][\t| ]po:noun is:feminine
-Výstupný riadok Harpera:    kmeň/<AFIXFLAGY><POSFLAG>
+    hunspell input line:   stem[/AFFIXFLAGS][\t| ]po:noun is:feminine
+    Harper output line:    stem/<AFFIXFLAGS><POSFLAG>
 
-POS flagy musia zodpovedať `properties` v annotations.json (viď aff2annotations.POS_FLAG).
-Prvý riadok výstupu = počet záznamov (hunspell konvencia, Harper ju akceptuje).
+The part-of-speech flags must match the `properties` block in annotations.json
+(see aff2annotations.POS_FLAG). The first output line is the entry count, which
+is a hunspell convention Harper also expects.
 
-Voliteľné orezanie pokrytia (variant „B"): --keep-stems <súbor s lemami> alebo --limit N.
+Optional coverage trimming: --keep-stems <file with lemmas> or --limit N.
 
-Použitie: dic2dict.py <sk_SK.dic> [-o dictionary.dict] [--keep-stems f] [--limit N]
+Usage: dic2dict.py <sk_SK.dic> [-o dictionary.dict] [--keep-stems f] [--limit N]
 """
 import argparse, re, sys
 from collections import Counter
 
-# musí sedieť s aff2annotations.POS_FLAG
+# Must stay in sync with aff2annotations.POS_FLAG.
 POS_FLAG = {
     'noun': 'a', 'verb': 'e', 'adjective': 'd', 'adverb': 'f',
     'pronoun': 'g', 'preposition': 'h', 'conjunction': 'i',
     'interjection': 'j', 'particle': 'k', 'number': 'l',
     'acronym': 'm', 'participle': 'o',
-    'adjectiv': 'd',   # preklep v zdrojovom sk_SK.dic (1×)
+    'adjectiv': 'd',   # typo in the source sk_SK.dic (occurs once)
 }
 POS_RE = re.compile(r'\bpo:([a-z_]+)')
 
-# Licenčná hlavička generovaných dát. Harper `parse_word_list` preskakuje riadky
-# začínajúce '#', ale PRVÝ riadok musí byť počet záznamov → hlavička ide až pod neho.
-# (overené: harper-core/src/spell/rune/word_list.rs:24-28)
+# Licence header for the generated data. Harper's `parse_word_list` skips lines
+# starting with '#', but the FIRST line must be the entry count, so the header
+# goes below it. (verified: harper-core/src/spell/rune/word_list.rs:24-28)
 DATA_HEADER = """\
 Slovak dictionary data for Harper — word list.
 Derived from sk-spell/hunspell-sk <https://github.com/sk-spell/hunspell-sk>
@@ -62,16 +64,17 @@ Source revision: {rev}"""
 
 
 def parse_dic(path):
-    """Vygeneruje (kmeň, afix_flagy, pos) pre každý záznam."""
+    """Yield (stem, affix_flags, pos) for every entry."""
     with open(path, encoding='utf-8') as f:
         lines = f.read().splitlines()
-    # 1. riadok = počet (ak je to číslo)
+    # The first line is the entry count (when it is a number).
     if lines and lines[0].strip().isdigit():
         lines = lines[1:]
     for ln in lines:
         if not ln.strip() or ln.lstrip().startswith('#'):
             continue
-        # oddeľ morfologickú časť (za tabom alebo za medzerou nasledovanou po:/is:)
+        # Split off the morphological part (after a tab, or after a space
+        # followed by po:/is: fields).
         head = re.split(r'[\t ]', ln, maxsplit=1)
         word_part = head[0]
         morph = head[1] if len(head) > 1 else ''
@@ -87,11 +90,12 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('dic')
     ap.add_argument('-o', '--out', default='dictionary.dict')
-    ap.add_argument('--keep-stems', help='súbor so zoznamom lem, ktoré ponechať (variant B)')
-    ap.add_argument('--limit', type=int, help='ponechaj len prvých N záznamov (test)')
-    ap.add_argument('--no-pos', action='store_true', help='nepridávaj POS flagy (čistý spell test)')
+    ap.add_argument('--keep-stems', help='file listing the lemmas to keep (trimmed build)')
+    ap.add_argument('--limit', type=int, help='keep only the first N entries (testing)')
+    ap.add_argument('--no-pos', action='store_true',
+                    help='omit part-of-speech flags (plain spell-check test)')
     ap.add_argument('--source-rev', default='unknown',
-                    help='revízia zdrojového hunspell-sk (zapíše sa do hlavičky)')
+                    help='revision of the hunspell-sk source (recorded in the header)')
     a = ap.parse_args()
 
     keep = None
@@ -117,12 +121,12 @@ def main():
         stats['written'] += 1
 
     with open(a.out, 'w', encoding='utf-8') as f:
-        f.write(f"{len(out)}\n")          # počet MUSÍ byť prvý riadok
+        f.write(f"{len(out)}\n")          # the count MUST be the first line
         for line in DATA_HEADER.format(rev=a.source_rev).split('\n'):
             f.write(f"# {line}\n" if line else "#\n")
         f.write("\n".join(out) + "\n")
 
-    print(f"zapísaných záznamov: {stats['written']}", file=sys.stderr)
+    print(f"entries written: {stats['written']}", file=sys.stderr)
     for k, v in stats.items():
         if k != 'written':
             print(f"  {k}: {v}", file=sys.stderr)

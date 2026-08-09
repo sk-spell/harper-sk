@@ -35,6 +35,15 @@ Requires Python 3 and git; no third-party packages. The generated files record
 the exact hunspell-sk revision they came from in their header, so it is always
 possible to tell which upstream release a given build corresponds to.
 
+## Staying in sync with hunspell-sk
+
+A scheduled workflow (`.github/workflows/sync-upstream.yml`) rebuilds the data
+every Monday against the current hunspell-sk and opens a pull request if the
+result differs. Picking up a new release of the dictionary is therefore a review
+of a generated diff, not a task anyone has to remember — and it costs the
+hunspell-sk side nothing. The workflow can also be triggered by hand from the
+Actions tab.
+
 ## Using the data in Harper
 
 Harper embeds its dictionary at compile time

@@ -19,32 +19,32 @@
 # NOTE: this script only *generates* data. The generated dictionary data is
 # derived from sk-spell/hunspell-sk and stays under MPL-2.0 — see NOTICE.
 """
-aff2annotations.py — preloží hunspell sk_SK.aff → Harper annotations.json.
+aff2annotations.py — translate hunspell sk_SK.aff into Harper annotations.json.
 
-Mapovanie (hunspell → Harper):
-    SFX/PFX <flag> Y|N <počet>          → affixes[<flag>].kind = suffix|prefix,
+Mapping (hunspell → Harper):
+    SFX/PFX <flag> Y|N <count>          → affixes[<flag>].kind = suffix|prefix,
                                           cross_product = (Y == true)
     SFX <flag> <remove> <add> <cond> …  → replacements[] {remove, add, condition}
-    "0"                                  → "" (hunspell nula = prázdny reťazec)
-    <add>/<cont>                         → continuation flag sa odreže (Harper ho nepozná),
-                                          zaznamená sa do štatistiky
-    po:<pos> na pravidle                 → target[].metadata (slovný druh výsledku)
+    "0"                                  → "" (hunspell's zero means empty string)
+    <add>/<cont>                         → the continuation flag is stripped (Harper has
+                                          no concept of it) and counted in the stats
+    po:<pos> on a rule                   → target[].metadata (part of speech of the result)
 
-Poznámka k CIRCUMFIX: sk_SK.aff deklaruje `CIRCUMFIX s`; flag `s` sa objavuje ako
-continuation na PFX F (naj-/najne-). Harper circumfix nepozná → tieto pravidlá sa
-označia a rieši ich ekvivalenčný test (expand_check.py), nie tento skript.
+A note on CIRCUMFIX: sk_SK.aff declares `CIRCUMFIX s`, and flag `s` appears as a
+continuation on PFX F (naj-/najne-). Harper does not support circumfixes, so those
+rules are flagged here and handled by the equivalence test, not by this script.
 
-Použitie: aff2annotations.py <sk_SK.aff> [-o annotations.json] [--stats]
+Usage: aff2annotations.py <sk_SK.aff> [-o annotations.json] [--stats]
 """
 import argparse, json, re, sys
 from collections import OrderedDict, Counter
 
-# hunspell po: → Harper `DictWordMetadata` (autoritatívne: harper-core/src/dict_word_metadata.rs).
-# ⚠️ Pozor na typy: noun/pronoun/verb/adjective/adverb/conjunction/determiner sú Option<...Data>
-# (teda MAPA), ale `preposition` je holý `bool`. Harper NEMÁ polia pre interjection/particle/
-# numeral/acronym — tie sa vyjadria cez univerzálny `pos_tag: Option<UPOS>`
-# (varianty z harper-pos-utils/src/upos.rs: ADJ ADP ADV AUX CCONJ DET INTJ NOUN NUM PART
-#  PRON PROPN PUNCT SCONJ SYM VERB X).
+# hunspell po: → Harper `DictWordMetadata` (authoritative: harper-core/src/dict_word_metadata.rs).
+# ⚠️ Mind the types: noun/pronoun/verb/adjective/adverb/conjunction/determiner are
+# Option<...Data> (i.e. a MAP), but `preposition` is a plain `bool`. Harper has NO fields
+# for interjection/particle/numeral/acronym — those go through the generic
+# `pos_tag: Option<UPOS>` (variants in harper-pos-utils/src/upos.rs: ADJ ADP ADV AUX CCONJ
+#  DET INTJ NOUN NUM PART PRON PROPN PUNCT SCONJ SYM VERB X).
 POS_MAP = {
     'noun':         {'noun': {}},
     'verb':         {'verb': {}},
@@ -52,18 +52,19 @@ POS_MAP = {
     'adverb':       {'adverb': {}},
     'pronoun':      {'pronoun': {}},
     'conjunction':  {'conjunction': {}},
-    'preposition':  {'preposition': True},              # bool, NIE mapa
+    'preposition':  {'preposition': True},              # a bool, NOT a map
     'interjection': {'pos_tag': 'INTJ'},
     'particle':     {'pos_tag': 'PART'},
     'number':       {'pos_tag': 'NUM'},
     'acronym':      {'noun': {'is_proper': True}, 'pos_tag': 'PROPN'},
     'participle':   {'verb': {}},
-    'adjectiv':     {'adjective': {}},                  # preklep v zdrojovom sk_SK.dic (1×)
+    'adjectiv':     {'adjective': {}},                  # typo in the source sk_SK.dic (once)
 }
 
-# Licenčná hlavička generovaných dát. JSON komentáre nepozná, ale Harper deserializuje
-# `HumanReadableAttributeList` bez `deny_unknown_fields` → neznámy top-level kľúč "#"
-# serde ticho ignoruje. (overené: harper-core/src/spell/rune/attribute_list.rs:275-279)
+# Licence header for the generated data. JSON has no comments, but Harper deserializes
+# `HumanReadableAttributeList` without `deny_unknown_fields`, so an unknown top-level
+# key "#" is silently ignored by serde.
+# (verified: harper-core/src/spell/rune/attribute_list.rs:275-279)
 DATA_HEADER = [
     "Slovak dictionary data for Harper — affix annotations.",
     "Derived from sk-spell/hunspell-sk <https://github.com/sk-spell/hunspell-sk>",
@@ -80,7 +81,7 @@ TAG_RE = re.compile(r'\b(po|is|ts|tp):([a-z_0-9]+)')
 
 
 def parse_aff(path):
-    """Vráti (affixes_raw, stats). affixes_raw: flag → dict(kind, cross, rules[])."""
+    """Return (affixes_raw, stats). affixes_raw: flag → dict(kind, cross, rules[])."""
     affixes = OrderedDict()
     stats = Counter()
     current = None
@@ -100,7 +101,7 @@ def parse_aff(path):
                     'comment': line.split('#', 1)[1].strip() if '#' in line else '',
                 }
                 continue
-            # pravidlový riadok
+            # a rule line
             parts = line.split('#', 1)[0].split()
             if len(parts) < 4 or parts[0] not in ('SFX', 'PFX'):
                 continue
@@ -110,7 +111,7 @@ def parse_aff(path):
                 continue
             remove, add, cond = parts[2], parts[3], parts[4] if len(parts) > 4 else '.'
             tags = TAG_RE.findall(' '.join(parts[4:]))
-            # continuation flag v add:  "naj/s" → add="naj", cont="s"
+            # continuation flag inside add:  "naj/s" → add="naj", cont="s"
             cont = ''
             if '/' in add:
                 add, cont = add.split('/', 1)
@@ -127,7 +128,7 @@ def parse_aff(path):
 
 
 def target_from_tags(rules):
-    """Ak všetky pravidlá triedy zhodne určujú slovný druh, daj ho do target."""
+    """If every rule in the class agrees on a part of speech, put it in target."""
     poss = {t[1] for r in rules for t in r['tags'] if t[0] == 'po'}
     if len(poss) == 1:
         pos = poss.pop()
@@ -153,7 +154,7 @@ def build_annotations(affixes, source_rev='unknown'):
             ('base_metadata', {}),
             ('rename_ok', True),
         ])
-    # properties: slovnodruhové flagy pre dictionary.dict (viď dic2dict.py)
+    # properties: part-of-speech flags used in dictionary.dict (see dic2dict.py)
     props = OrderedDict()
     for pos, meta in POS_MAP.items():
         flag = POS_FLAG.get(pos)
@@ -169,18 +170,18 @@ def build_annotations(affixes, source_rev='unknown'):
     ])
 
 
-# Flagy pre slovné druhy v dictionary.dict.
-# ⚠️ NESMÚ kolidovať s afixovými flagmi sk_SK.aff, ktoré sú:
-#     veľké: N F Z U D K M S V A C H B J L O Q Y I P X E W T R
-#     malé:  z c q b n
-#     + 's' je rezervované (CIRCUMFIX)
-# Voľné a tu použité: a d e f g h i j k l m o
+# Part-of-speech flags used in dictionary.dict.
+# ⚠️ These MUST NOT collide with the affix flags of sk_SK.aff, which are:
+#     upper case: N F Z U D K M S V A C H B J L O Q Y I P X E W T R
+#     lower case: z c q b n
+#     plus 's', reserved for CIRCUMFIX
+# Free, and used here: a d e f g h i j k l m o
 POS_FLAG = {
     'noun': 'a', 'verb': 'e', 'adjective': 'd', 'adverb': 'f',
     'pronoun': 'g', 'preposition': 'h', 'conjunction': 'i',
     'interjection': 'j', 'particle': 'k', 'number': 'l',
     'acronym': 'm', 'participle': 'o',
-    'adjectiv': 'd',   # preklep v zdroji → rovnaký flag ako adjective
+    'adjectiv': 'd',   # typo in the source → same flag as adjective
 }
 
 
@@ -190,22 +191,22 @@ def main():
     ap.add_argument('-o', '--out', default='annotations.json')
     ap.add_argument('--stats', action='store_true')
     ap.add_argument('--source-rev', default='unknown',
-                    help='revízia zdrojového hunspell-sk (zapíše sa do hlavičky)')
+                    help='revision of the hunspell-sk source (recorded in the header)')
     a = ap.parse_args()
 
     affixes, stats = parse_aff(a.aff)
-    # kolízia afixových a POS flagov?
+    # do the affix flags and the POS flags collide?
     clash = set(affixes) & set(POS_FLAG.values())
     if clash:
-        print(f"⚠️  KOLÍZIA flagov afix×POS: {sorted(clash)} — uprav POS_FLAG!", file=sys.stderr)
+        print(f"⚠️  affix×POS flag COLLISION: {sorted(clash)} — adjust POS_FLAG!", file=sys.stderr)
 
     ann = build_annotations(affixes, a.source_rev)
     with open(a.out, 'w', encoding='utf-8') as f:
         json.dump(ann, f, ensure_ascii=False, indent=2)
         f.write('\n')
 
-    print(f"affix tried: {len(ann['affixes'])}  properties: {len(ann['properties'])}", file=sys.stderr)
-    print(f"pravidiel: {stats['rules']}  continuation flagov: {stats['continuation_flags']}", file=sys.stderr)
+    print(f"affix classes: {len(ann['affixes'])}  properties: {len(ann['properties'])}", file=sys.stderr)
+    print(f"rules: {stats['rules']}  continuation flags: {stats['continuation_flags']}", file=sys.stderr)
     if a.stats:
         for flag, x in affixes.items():
             print(f"  {flag} {x['kind'][:3]} cross={'Y' if x['cross_product'] else 'N'} "

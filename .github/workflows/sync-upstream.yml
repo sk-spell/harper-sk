@@ -1,0 +1,62 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# Watch sk-spell/hunspell-sk and open a pull request whenever rebuilding the
+# dictionary data would change it. Nobody has to remember to re-run anything,
+# and no work is added on the hunspell-sk side.
+
+name: Sync from hunspell-sk
+
+on:
+  schedule:
+    - cron: '0 5 * * 1'    # every Monday, 05:00 UTC
+  workflow_dispatch:        # and on demand
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch hunspell-sk and rebuild
+        run: |
+          make fetch
+          make clean build
+
+      - name: Open a pull request if the data changed
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          if git diff --quiet -- data/; then
+            echo "Generated data is unchanged — nothing to do."
+            exit 0
+          fi
+
+          SHA=$(git -C upstream/hunspell-sk rev-parse --short HEAD)
+          REV=$(git -C upstream/hunspell-sk log -1 --format='%h (%ad)' --date=short)
+          BRANCH="sync/hunspell-sk-${SHA}"
+
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git add data/
+          git commit -m "Rebuild data from hunspell-sk ${REV}"
+          git push -f -u origin "$BRANCH"
+
+          gh pr create \
+            --title "Rebuild data from hunspell-sk ${REV}" \
+            --body "$(cat <<EOF
+          Automated rebuild: \`sk-spell/hunspell-sk\` moved to \`${REV}\`, and
+          regenerating the data produces a different result.
+
+          The diff below is generated output only — review it, do not edit it.
+          If something looks wrong in the *words themselves*, the fix belongs in
+          hunspell-sk; if the *translation* is wrong, the fix belongs in
+          \`scripts/\`.
+          EOF
+          )" || echo "A pull request for this revision already exists."
