@@ -23,11 +23,33 @@ translates it into the file format Harper expects; it adds no lexical data
 of its own.
 
 
+Frequency lists used for selection — acknowledgement
+----------------------------------------------------
+
+The trimmed build (data/trimmed/) keeps a subset of the entries. Entry
+selection was filtered using the lemma frequency list of the
+prim-11.0-public-all corpus, Slovak National Corpus, Ľ. Štúr Institute of
+Linguistics, Slovak Academy of Sciences <https://korpus.juls.savba.sk>, with
+the OpenSubtitles frequency list (hermitdave/FrequencyWords, MIT) as a
+secondary source.
+
+Those lists are a selection criterion only. No word and no frequency figure
+from them is contained in, or redistributed with, the data in this repository:
+every word comes from hunspell-sk. The lists themselves are not redistributed
+here either.
+
+
 Generator and build tooling — Apache License 2.0
 ------------------------------------------------
 
     scripts/aff2annotations.py
     scripts/dic2dict.py
+    scripts/gen_superlatives.py
+    scripts/expand.py
+    scripts/check_data.py
+    scripts/paradigm_cost.py
+    scripts/freq_join.py
+    scripts/plan_cut.py
     Makefile
 
 Copyright 2026 Branislav Klocok.
