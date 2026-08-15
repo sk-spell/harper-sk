@@ -2,3 +2,5 @@ upstream/
 __pycache__/
 *.pyc
 data/superlatives.tsv
+data/trimmed/costs.tsv
+data/trimmed/stem_freq.tsv
