@@ -14,7 +14,7 @@ command.
 
 | Path | What it is |
 |---|---|
-| `data/dictionary.dict` | word list — 800 386 entries, expanding to 2.9 M word forms |
+| `data/dictionary.dict` | word list — 800 386 entries, expanding to 2 877 771 word forms |
 | `data/annotations.json` | affix classes — 30 classes, 3 458 rules |
 | `data/trimmed/dictionary.dict` | the same, trimmed to a budget of word forms (see below) |
 | `scripts/dic2dict.py` | `sk_SK.dic` → `dictionary.dict` |
@@ -75,10 +75,16 @@ The budget is spent where it buys the most text: value is the frequency of the
 whole paradigm, cost is the number of forms it expands into, and closed classes
 (pronouns, prepositions, conjunctions, particles, numerals) are always kept
 because they are cheap and their absence is the most conspicuous kind of false
-positive. At a 620 000-form budget the result keeps 58 836 entries and 607 k
-forms — about 360 MB in Harper, in the same range as the German dictionary —
-while still covering 90.4 % of the running text of a reference corpus, against
-91.5 % for the untrimmed build.
+positive. At a 620 000-form budget the result keeps 58 836 entries and 608 139
+distinct forms — about 360 MB in Harper, in the same range as the German
+dictionary — while still covering 90.4 % of the running text of a reference
+corpus, against 91.5 % for the untrimmed build.
+
+The budget is counted per entry, before de-duplication, because a cost has to
+belong to exactly one entry to be knapsack-able: several entries can expand to
+the same word (`zlom` comes out of `zlo`, `zlom`, `zlomiť` and `zlý` alike), so
+620 000 budgeted forms are 608 139 distinct ones. `data/trimmed/report.txt`
+breaks the spend down per part of speech and says the same thing in its header.
 
 `data/trimmed/keep_stems.txt` records exactly which entries survived, so a trim
 can be reproduced without access to the frequency lists.
@@ -115,8 +121,10 @@ correctness.
 One known gap is not ours: Harper folds case when building its dictionary, so
 when the source holds both a lower-case word and a capitalised spelling of it —
 `kde` and the acronym `KDE`, `urán` and the planet `Urán` — only one survives,
-taking every inflected form of the other with it. That costs 5 522 forms here,
-including words as common as `už` and `kde`, and is tracked upstream in
+taking every inflected form of the other with it. Of the 2 877 771 forms this
+data expands to, Harper therefore builds 2 870 065: the 7 706 it drops all have
+a case twin in the build, and they include words as common as `už` and `kde`.
+It is tracked upstream in
 [Automattic/harper#2411](https://github.com/Automattic/harper/issues/2411).
 
 ## Licensing

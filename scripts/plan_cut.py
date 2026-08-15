@@ -43,6 +43,23 @@ import csv
 import sys
 from collections import Counter, defaultdict
 
+# Prepended to the report, because both of its columns count something narrower than the
+# obvious thing and the totals are quoted elsewhere.
+HEADER_NOTE = [
+    "# What the budget bought, per part of speech. Both columns count deliberately:",
+    "#",
+    "#   stems  distinct stem strings, not dictionary entries. A stem the .dic lists several",
+    "#          times (homographs carrying different flags) is one row and one keep-or-drop",
+    "#          decision, because `dic2dict --keep-stems` matches by the stem string.",
+    "#",
+    "#   forms  summed per entry, before de-duplication: several entries can expand to the",
+    "#          same word (`zlom` comes out of `zlo`, `zlom`, `zlomiť` and `zlý` alike). The",
+    "#          budget is spent in this currency on purpose — a cost has to belong to exactly",
+    "#          one entry to be knapsack-able — so these totals run some 1.5 % above the",
+    "#          number of distinct forms the build ends up holding. For that number, expand",
+    "#          the result: `expand.py dictionary.dict annotations.json | sort -u | wc -l`.",
+]
+
 CLOSED_CLASSES = {
     "pronoun",
     "preposition",
@@ -214,7 +231,11 @@ def main():
             f"{k:12s} {c['stems']:8,} {c['kept_stems']:8,} {c['kept_stems'] / c['stems']:6.1%} "
             f"{c['forms']:10,} {c['kept_forms']:10,} {c['kept_forms'] / c['forms']:6.1%}"
         )
-    report = "\n".join(lines)
+    lines.append(
+        f"{'TOTAL':12s} {len(items):8,} {len(keep):8,} {len(keep) / len(items):6.1%} "
+        f"{total_forms:10,} {used:10,} {used / total_forms:6.1%}"
+    )
+    report = "\n".join(HEADER_NOTE) + "\n\n" + "\n".join(lines)
     print("\n" + report, file=sys.stderr)
     if a.report:
         with open(a.report, "w", encoding="utf-8") as f:

@@ -1,3 +1,16 @@
+# What the budget bought, per part of speech. Both columns count deliberately:
+#
+#   stems  distinct stem strings, not dictionary entries. A stem the .dic lists several
+#          times (homographs carrying different flags) is one row and one keep-or-drop
+#          decision, because `dic2dict --keep-stems` matches by the stem string.
+#
+#   forms  summed per entry, before de-duplication: several entries can expand to the
+#          same word (`zlom` comes out of `zlo`, `zlom`, `zlomiť` and `zlý` alike). The
+#          budget is spent in this currency on purpose — a cost has to belong to exactly
+#          one entry to be knapsack-able — so these totals run some 1.5 % above the
+#          number of distinct forms the build ends up holding. For that number, expand
+#          the result: `expand.py dictionary.dict annotations.json | sort -u | wc -l`.
+
 pos             stems     kept      %      forms       kept      %
 adjective     672,192   10,113   1.5%  1,979,040    262,502  13.3%
 verb           15,980    4,800  30.0%    494,190    147,571  29.9%
@@ -13,3 +26,4 @@ conjunction        42       42 100.0%         44         44 100.0%
 interjection       24       24 100.0%         24         24 100.0%
 particle           13       13 100.0%         15         15 100.0%
 participle          1        1 100.0%          1          1 100.0%
+TOTAL         799,323   58,563   7.3%  2,921,387    620,000  21.2%
