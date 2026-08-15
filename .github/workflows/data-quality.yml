@@ -1,0 +1,59 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# Check the generated data against hunspell itself, which is the reference implementation of
+# the source dictionary. Runs on every change and on the weekly rebuild, so a translation bug
+# cannot reach the published data unnoticed.
+#
+#   precision  nothing we generate may be a word hunspell rejects  (limit 0.1 %)
+#   coverage   of the running text hunspell covers, we may miss    (limit 0.2 %)
+#
+# Coverage is frequency-weighted on purpose: losing `už` and losing `Alma-atanásobný` are not
+# the same event. The frequency list is only a yardstick — no word from it enters the data.
+
+name: Data quality
+
+on:
+  push:
+    paths:
+      - 'data/**'
+      - 'scripts/**'
+      - '.github/workflows/data-quality.yml'
+  pull_request:
+  schedule:
+    - cron: '30 5 * * 1'    # after the Monday rebuild
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install hunspell
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y hunspell
+
+      - name: Fetch the hunspell-sk source
+        run: make fetch
+
+      - name: Fetch a frequency list (OpenSubtitles, MIT)
+        run: |
+          curl -sSfL -o sk_full.txt \
+            https://raw.githubusercontent.com/hermitdave/FrequencyWords/master/content/2018/sk/sk_full.txt
+          wc -l sk_full.txt
+
+      - name: Precision — do we invent words?
+        run: |
+          python3 scripts/check_data.py precision \
+            --dict data/dictionary.dict \
+            --annotations data/annotations.json \
+            --hunspell upstream/hunspell-sk/sk_SK
+
+      - name: Coverage — do we lose words?
+        run: |
+          python3 scripts/check_data.py coverage \
+            --dict data/dictionary.dict \
+            --annotations data/annotations.json \
+            --hunspell upstream/hunspell-sk/sk_SK \
+            --freq sk_full.txt
