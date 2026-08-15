@@ -91,6 +91,10 @@ def main():
     ap.add_argument('dic')
     ap.add_argument('-o', '--out', default='dictionary.dict')
     ap.add_argument('--keep-stems', help='file listing the lemmas to keep (trimmed build)')
+    ap.add_argument('--extra-entries',
+                    help='extra flag-less entries as <form>TAB<pos> (superlatives from '
+                         'gen_superlatives.py — Harper cannot express hunspell continuation '
+                         'flags, so those forms have to be materialised)')
     ap.add_argument('--limit', type=int, help='keep only the first N entries (testing)')
     ap.add_argument('--no-pos', action='store_true',
                     help='omit part-of-speech flags (plain spell-check test)')
@@ -119,6 +123,19 @@ def main():
         all_flags = flags + pos_flag
         out.append(f"{stem}/{all_flags}" if all_flags else stem)
         stats['written'] += 1
+
+    if a.extra_entries:
+        with open(a.extra_entries, encoding='utf-8') as f:
+            for raw in f:
+                form, _, pos = raw.rstrip('\n').partition('\t')
+                if not form:
+                    continue
+                if keep is not None and form not in keep:
+                    stats['extra_skipped_by_keep'] += 1
+                    continue
+                pos_flag = '' if a.no_pos else POS_FLAG.get(pos, '')
+                out.append(f"{form}/{pos_flag}" if pos_flag else form)
+                stats['extra_written'] += 1
 
     with open(a.out, 'w', encoding='utf-8') as f:
         f.write(f"{len(out)}\n")          # the count MUST be the first line
