@@ -29,7 +29,7 @@ Frequency lists used for selection — acknowledgement
 The trimmed build (data/trimmed/) keeps a subset of the entries. Entry
 selection was filtered using the lemma frequency list of the
 prim-11.0-public-all corpus, Slovak National Corpus, Ľ. Štúr Institute of
-Linguistics, Slovak Academy of Sciences <https://korpus.juls.savba.sk>, with
+Linguistics, Slovak Academy of Sciences, v. v. i. <https://korpus.sk>, with
 the OpenSubtitles frequency list (hermitdave/FrequencyWords, MIT) as a
 secondary source.
 
