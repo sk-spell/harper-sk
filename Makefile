@@ -5,6 +5,7 @@
 #
 #   make fetch    clone or update the hunspell-sk source
 #   make build    regenerate data/dictionary.dict and data/annotations.json
+#   make retrim   regenerate data/trimmed/dictionary.dict from the committed keep list
 #   make          fetch + build
 #
 # To build against an existing checkout instead of cloning:
@@ -65,7 +66,7 @@ TRIM     ?= data/trimmed
 FREQ_SNK ?=
 FREQ_OS  ?=
 
-.PHONY: trim
+.PHONY: trim retrim
 
 trim: $(TRIM)/dictionary.dict
 	@echo "trimmed to a budget of $(BUDGET) word forms"
@@ -88,6 +89,21 @@ $(TRIM)/dictionary.dict: $(TRIM)/keep_stems.txt $(UPSTREAM)/sk_SK.dic scripts/di
 	$(PYTHON) scripts/dic2dict.py $(UPSTREAM)/sk_SK.dic -o $@ --source-rev "$(REV)" \
 	  --keep-stems $(TRIM)/keep_stems.txt --extra-entries $(DATA)/superlatives.tsv
 
+# `make retrim` applies the committed selection (keep_stems.txt) to the current source and
+# needs no frequency lists, so the weekly rebuild can keep the trimmed build in step with
+# hunspell-sk. It does not re-plan: entries that hunspell-sk adds later stay out until
+# someone runs `make trim` with the lists again, and removed ones simply drop.
+retrim: $(DATA)/superlatives.tsv
+	@test -f $(TRIM)/keep_stems.txt || { echo "no $(TRIM)/keep_stems.txt — run make trim first"; exit 1; }
+	$(PYTHON) scripts/dic2dict.py $(UPSTREAM)/sk_SK.dic -o $(TRIM)/dictionary.dict --source-rev "$(REV)" \
+	  --keep-stems $(TRIM)/keep_stems.txt --extra-entries $(DATA)/superlatives.tsv
+
+# `clean` removes everything generated, but not the trim plan: keep_stems.txt and report.txt
+# are committed and cannot be rebuilt without the frequency lists. `clean-plan` removes them too.
+.PHONY: clean-plan
 clean:
 	rm -f $(DATA)/dictionary.dict $(DATA)/annotations.json $(DATA)/superlatives.tsv
+	rm -f $(TRIM)/dictionary.dict $(TRIM)/stem_freq.tsv $(TRIM)/costs.tsv
+
+clean-plan: clean
 	rm -rf $(TRIM)
