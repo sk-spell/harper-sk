@@ -93,8 +93,8 @@ can be reproduced without access to the frequency lists.
 enters the data: every word still comes from hunspell-sk, and the lists merely
 decide which of those entries to keep. Entry selection was filtered using the
 lemma frequency list of the prim-11.0-public-all corpus, Slovak National Corpus,
-Ľ. Štúr Institute of Linguistics, Slovak Academy of Sciences,
-<https://korpus.juls.savba.sk>, with the OpenSubtitles frequency list
+Ľ. Štúr Institute of Linguistics, Slovak Academy of Sciences, v. v. i.,
+<https://korpus.sk>, with the OpenSubtitles frequency list
 ([hermitdave/FrequencyWords](https://github.com/hermitdave/FrequencyWords), MIT)
 as a secondary source for word forms the lemma list does not cover.
 
