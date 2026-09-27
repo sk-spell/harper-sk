@@ -1,4 +1,4 @@
-58836
+58762
 # Slovak dictionary data for Harper — word list.
 # Derived from sk-spell/hunspell-sk <https://github.com/sk-spell/hunspell-sk>
 # by Zdenko Podobný and contributors.
@@ -9,7 +9,7 @@
 # obtain one at <https://mozilla.org/MPL/2.0/>.
 #
 # GENERATED FILE — do not edit by hand. Rebuild with scripts/dic2dict.py.
-# Source revision: ea0251e (2026-05-02)
+# Source revision: ee4ffc3 (2026-09-25)
 a/i
 á/j
 Á/j
@@ -1084,7 +1084,7 @@ apnoe
 apo/ca
 apod
 apokalypsa/zZa
-apokalypticky
+apokalypticky/Nf
 apokryf/Ba
 apolitickosť/Ka
 apoliticky/Nf
@@ -4075,7 +4075,7 @@ cín/Ba
 cing
 cingi
 cingot
-cingulum
+cingulum/Ma
 cink/Ba
 cinkajúci
 cinkanie/Va
@@ -4341,7 +4341,7 @@ cup
 cupi
 cupy
 curling
-curriculum
+curriculum/Ma
 curry
 cúvajúci
 cúvanie/Va
@@ -6504,7 +6504,7 @@ dohoda/zZa
 dohodenie/Va
 dohodiť/ENe
 dohodnúť/WNe
-dohodnutie/Va
+dohodnutie/VNa
 dohodnutý/YNd
 dohol
 dohola
@@ -8142,11 +8142,10 @@ egoista/Ha
 egoisticky/Nf
 egoistický/Yd
 egoizmus/Ba
-Egon
+Egon/Ca
 egreš/Ja
-egypt
 Egypt/Ba
-Egypta
+Egypta/a
 Egypťan/ca
 Egypťania
 egyptológ/ca
@@ -8468,7 +8467,7 @@ epidemiológ/ca
 epidemiológia/Ua
 epidemiologicky
 epidemiologický/Yd
-epifánia
+epifánia/Ua
 epifenomén
 epifyt
 epifýza/zZa
@@ -8485,7 +8484,7 @@ epileptik/Ca
 epilóg/Ba
 epilógu
 epinerfin
-episkopálny
+episkopálny/YNd
 episkopát/Ba
 epistémé
 epištola/zZa
@@ -8666,12 +8665,8 @@ Eugen/ca
 eugenika/zZa
 eucharistia/Ua
 eucharistický/YNd
-eukalyptami
-eukalyptom
-eukalyptov
 eukalyptu
-eukalyptus/Ba
-eukalypty
+eukalyptus/La
 eulógia
 eunuch/Ca
 eunuchov/Yd
@@ -9591,7 +9586,7 @@ formička/zZa
 formovane
 formovanie/VNa
 formovať/WNe
-formovateľ
+formovateľ/ca
 formovo
 formujúci
 formula/zZa
@@ -10932,9 +10927,6 @@ hektický/YNd
 hektoliter/Ja
 Helada
 Helena/zZa
-Helenina
-Helenine
-Heleninej
 Helga
 Helge
 heliem
@@ -12192,7 +12184,7 @@ Hyacinta
 hybaj
 hýbajúc
 hýbať/TNe
-hýbateľ
+hýbateľ/ca
 Hybe
 hybnosť/Ka
 hybný/YNd
@@ -13030,8 +13022,7 @@ impakt
 Impala
 impaly
 impedancia/Ua
-imperatív/Ba
-imperatíve
+imperatív/Ja
 imperátor/Ca
 imperialista/Ha
 imperializmus/Ba
@@ -13241,9 +13232,7 @@ iniciovať/WNe
 injekcia/Ua
 injekčne
 injekčný/YNd
-injektáž
-injektáži
-injektážou
+injektáž/Da
 injektor/Ba
 injuria
 inkarnácia/Ua
@@ -14023,8 +14012,7 @@ jednak
 jednako
 jednanie/Va
 jednať/ENe
-jednateľ
-jednateľa
+jednateľ/ca
 jedného
 jednej
 jednému
@@ -15434,7 +15422,7 @@ klzký/YNd
 km/m
 KM/m
 kmeň/Ja
-kmeňovo
+kmeňovo/f
 kmeňový/YNd
 kmeť/ca
 Kmeťová/Yd
@@ -15546,7 +15534,7 @@ kódovaný/YNd
 koeficient/Ba
 koenzým
 koevolúcia
-koexistencia/Ua
+koexistencia/UNa
 kofeín/Ba
 kofola/zZa
 koga
@@ -15874,9 +15862,9 @@ komplexite
 komplexne
 komplexnosť/Ka
 komplexný/YNd
-komplic
+komplic/Ca
 komplikácia/Ua
-komplikovane
+komplikovane/f
 komplikovanosť/Ka
 komplikovaný/YNd
 komplikovať/WNe
@@ -16043,10 +16031,10 @@ koniec/Ja
 konieckoncov
 koník/La
 konjunkcia/Ua
-konjunktív
+konjunktív/Ba
 konjunktivitída
 konjunktúra/zZa
-konjunkturálny
+konjunkturálny/YNd
 konkláve
 konkludentne
 Konkoľ
@@ -16403,9 +16391,7 @@ korupčne
 korupčník
 korupčníkov
 korupčný/YNd
-korveta/Ba
-korvetu
-korvety
+korveta/zZa
 kory
 korýt
 korýtko/Ma
@@ -18096,11 +18082,11 @@ leviatan
 levica/Ua
 Levice/Q
 levík/La
-levita
+levita/Ha
 levitácia/Ua
 Levitikus
 levity
-Levoča
+Levoča/Ua
 levočský/Yd
 levov/Yd
 levy
@@ -20416,8 +20402,7 @@ minútka/zZa
 minútový/YNd
 miocén
 mión
-Miranda
-Mirandu
+Miranda/zZa
 Mirka/zZa
 Mirko
 Miro
@@ -20917,7 +20902,7 @@ moriami
 Móric/ca
 Morin
 morka/zZa
-mormón
+mormón/Ca
 mornár
 Morseova
 morsky
@@ -20961,11 +20946,10 @@ motela
 motet
 moteto
 motilita
-motív/Ba
+motív/Ja
 motivácia/Ua
-motivačne
+motivačne/f
 motivačný/YNd
-motíve
 motivicky
 motivovaný/YNd
 motivovať/WNe
@@ -21265,15 +21249,10 @@ mušieľ
 mušinec
 muška/zZa
 muškát/Ba
-mušketa/Ba
-muškete
+mušketa/zZa
 mušketier/Ca
 mušketiera
 mušketierov/Yd
-mušketou
-mušketu
-muškety
-muškiet
 mušľa/Ua
 mušlí
 mušlička/zZa
@@ -21397,15 +21376,12 @@ mýt
 mýticky/f
 mýtický/YNd
 mýtmi
-mýtnik/ca
+mýtnik/Ca
 mýtny/Yd
 mýto/Ma
-mýtoch
 mytológia/Ua
 mytologický/Yd
-mýtov
-mýtus/Ba
-mýty
+mýtus/La
 Mýval
 myxóm
 myzofóbia
@@ -22369,7 +22345,6 @@ národopisný/YNd
 národovec/Ca
 nárok/Ba
 nárokovať/WNe
-nárokovateľa
 narovnako
 narovnať/ENe
 narovno
@@ -22518,7 +22493,7 @@ nastrihané
 nástroj/Ja
 nástup/Ba
 nástupca/Ha
-nastúpenie/Va
+nastúpenie/VNa
 nastúpený/YNd
 nástupisko/Ma
 nástupišťa
@@ -22564,17 +22539,8 @@ našimi
 našinec/Ca
 naširoko
 našiť/WNe
-našité
 nášivka/zZa
-naškrobenej
-naškrobených
-naškrobeným
 našliapať
-našliapnuté
-našmátrať
-nášmu
-našom
-našou
 našsky/Nf
 naštartovanie/VNa
 naštartovať/WNe
@@ -23184,14 +23150,13 @@ nenápadnosť/Ka
 nenapíšu
 nenapočúval
 nenapraviteľne/Nf
-nenastúpenie/Va
 nenásytne/Nf
 nenásytnosť/Ka
 nenaštvi
 nenaštvite
 nenáviď
 nenávidený/Yd
-nenávidiaci
+nenávidiaci/Yd
 nenávidieť/RNe
 nenávisť/Ka
 nenávistne/Nf
@@ -23439,9 +23404,7 @@ nepublikovateľné
 nepusti
 nepustite
 nera
-neradi
 neradno
-nerado
 nerast/Ba
 nerastný/Yd
 nereálnosť/Ka
@@ -23602,7 +23565,6 @@ neujdú
 neukonči
 neukončime
 neuposlúchnutie/Va
-neuprednostni
 neúprosne/f
 neúprosný/Yd
 neurčito
@@ -23952,7 +23914,7 @@ niekam
 niekdajší/Id
 niekde
 niekdy
-niekedy
+niekedy/f
 niekoho
 niekoľko/nl
 niekoľkodňový/Yd
@@ -24397,8 +24359,8 @@ obávať/XNe
 obč
 občan/ca
 občanov/Yd
-občas
-občasne
+občas/f
+občasne/f
 občasník/Ba
 občasný/YNd
 občerstvenie/Va
@@ -24816,7 +24778,7 @@ obsiate
 obsiaty
 obsluha/zZa
 obsluhovať/WNe
-obsluhovateľ
+obsluhovateľ/ca
 obslúžiť/XNe
 obslužný/Yd
 obsmŕdač
@@ -24825,8 +24787,7 @@ obstarať/ENe
 obstarávací/INd
 obstarávanie/Va
 obstarávať/XNe
-obstarávateľ
-obstarávateľom
+obstarávateľ/ca
 obstáť/WNe
 obstavať
 obstojne/Nf
@@ -25087,7 +25048,7 @@ odér
 oder/ba
 Odesa/za
 odetý/YNd
-odev/Ba
+odev/La
 odeve
 odevný/Yd
 odfarbi
@@ -25281,8 +25242,7 @@ odmeranosť/Ka
 odmeraný/YNd
 odmerať/TNe
 odmiesť/RNe
-odmietajúce
-odmietajúci
+odmietajúci/YNd
 odmietanie/Va
 odmietať/XNe
 odmietavo/Nf
@@ -26471,7 +26431,7 @@ Oracle
 oráč/Ca
 oráčina/zZa
 orákul
-orákulum
+orákulum/Ma
 orálny/YNd
 Oran
 orange
@@ -27979,7 +27939,7 @@ parterov
 partes
 partia/Ua
 participácia/Ua
-particípium
+particípium/Ma
 participovať/WNe
 partička/zZa
 partitúr
@@ -28054,7 +28014,7 @@ pastierov/Yd
 pastiersky/Yd
 pastis
 pastiš
-pastofórium
+pastofórium/Ma
 pastor/Ca
 pastorácia/Ua
 pastoračný/YNd
@@ -28668,7 +28628,7 @@ periféria/Ua
 periférny/YNd
 perikard
 perikarditída
-perikopa
+perikopa/zZa
 perimeter
 perimetri
 perina/zZa
@@ -29562,7 +29522,7 @@ pocti
 poctime
 poctiť/ENe
 poctite
-poctivec/Ca
+poctivec/CNa
 poctivo/Nf
 poctivosť/Ka
 poctivý/YNd
@@ -29861,7 +29821,7 @@ podpísaný/YNd
 podpísať/TNe
 podpisovanie/VNa
 podpisovať/WNe
-podpisovateľ
+podpisovateľ/ca
 podpíšu
 podpiť
 podplácanie/Va
@@ -31056,7 +31016,7 @@ poriadal
 poriadala
 poriadame
 poriadať
-poriadateľ
+poriadateľ/ca
 poriadkový/YNd
 poriadny/YNd
 poriadok/Oa
@@ -31220,31 +31180,24 @@ poskytovať/WNe
 poskytovať/XNe
 poskytovateľ/ca
 poskytujúci/YNd
-posl
 posla
 poslami
 poslancov/Yd
-poslane
 poslanec/Ca
 poslanecký/YNd
 poslanie/Va
 poslankyňa/Ua
 poslaný/YNd
 poslať/TNe
-posledne
-posledno
+posledne/f
 posledný/YNd
-poslednýkrát
-posledom
-posledy
-poslepiačky
+poslednýkrát/nl
 posli
 poslíček/ca
 poslíčka
 poslíčkoch
 poslíčkom
-poslíčkov
-poslíčkovi
+poslíčkov/Yd
 poslíčkovia
 poslík/ca
 poslom
@@ -31501,7 +31454,7 @@ potlač/Da
 potláčanie/Va
 potláčaný/YNd
 potláčať/XNe
-potláčateľ
+potláčateľ/ca
 potlačene
 potlačenie/Va
 potlačený/Yd
@@ -31953,9 +31906,7 @@ požičaný/YNd
 požičať/TNe
 požičiavanie/Va
 požičiavať/XNe
-požičiavateľ
-požičiavateľa
-požičiavateľovi
+požičiavateľ/ca
 požičovňa/Ua
 požičovné
 požičovní
@@ -32247,7 +32198,7 @@ prebehu
 prebenda
 preberanie/Va
 preberať/ENe
-preberateľ
+preberateľ/ca
 prebiehajúci/Yd
 prebiehať/XNe
 prebíjanie/Va
@@ -33835,9 +33786,7 @@ prijímací/Id
 prijímač/Ja
 prijímačiek
 prijímačky/Q
-prijímajúca
-prijímajúceho
-prijímajúci
+prijímajúci/YNd
 prijímanie/VNa
 prijímaný/YNd
 prijímať/XNe
@@ -34296,9 +34245,7 @@ priučiť/XNe
 príučka/zZa
 prius
 Prius
-privádzač
-privádzača
-privádzači
+privádzač/Ja
 privádzať/XNe
 príval/Ba
 privaliť/ENe
@@ -34507,7 +34454,7 @@ projektový/YNd
 proklamácia/Ua
 Prokop/ca
 proktológia
-prokúra
+prokúra/zZa
 prokurátor/Ca
 prokurátorka/zZa
 prokurátormi
@@ -35189,18 +35136,18 @@ ráčik/La
 ráčiť/XNe
 Račko
 Račková/Yd
+rád
 rad/Ba
 rád/Ba
-rád/N
-radá
-rada/N
+rád/Nf
+rada/Nf
 rada/zZa
 radar/Ba
 Radava
 radca/Ha
 radej
 radenie/Va
-radi
+radi/Nf
 radiácia/Ua
 radiačný/YNd
 radiál
@@ -35242,7 +35189,7 @@ radne
 radnica/Ua
 radno
 radný/YNd
-rado
+rado/Nf
 Radobica
 radodajka/zZa
 Radoma
@@ -36268,8 +36215,7 @@ rodeo/Ma
 ródeo/Ma
 Roderik
 Rodézia
-rodiaci
-rodiacu
+rodiaci/YNd
 rodič/ca
 rodička/zZa
 rodičov/Yd
@@ -36508,8 +36454,7 @@ rozdeliť/ENe
 rozdeľovač/Ja
 rozdeľovanie/VNa
 rozdeľovať/WNe
-rozdeľujúce
-rozdeľujúci
+rozdeľujúci/YNd
 rozdiel/Ba
 rozdiele
 rozdielmi
@@ -37328,7 +37273,7 @@ sadlo/Ma
 sadnúť/WNe
 sadra/za
 sadrokartón/Ba
-saducej
+saducej/Ja
 sadza/Ua
 sadzač/Ca
 sadzba/zZa
@@ -39753,7 +39698,7 @@ spektrometriu
 spektroskop
 spektroskopia
 spektrum/Ma
-spekulum
+spekulum/Ma
 speleológ/ca
 speňaženie/Va
 speňažiť/ENe
@@ -39988,7 +39933,7 @@ spolubojovníkov/Yd
 spolubrat/ca
 spolubytie
 spolubývajúci/YNd
-spolucestovateľ
+spolucestovateľ/ca
 spolucítenie/Va
 spoludržiteľom
 spolufinancovať/WNe
@@ -40209,7 +40154,7 @@ spresni
 spresniť/ENe
 spresňovať/WNe
 spretŕhané
-sprevádzajúci
+sprevádzajúci/YNd
 sprevádzanie/Va
 sprevádzaný/YNd
 sprevádzať/XNe
@@ -42253,14 +42198,14 @@ SZTK/m
 šéfová
 šéfovanie/VNa
 šéfovať/WNe
-šéfredaktor/Ca
+šéfredaktor/La
 šéfredaktorka/zZa
 šéftréner/Ca
 šejk/ca
 šejker
 šek/Ba
-šekel
-šelest/Ba
+šekel/Ba
+šelest/Ja
 šelf
 šelfu
 šeliem
@@ -43694,7 +43639,7 @@ tabard
 tabasco
 tabasko
 tabatierka/zZa
-tabernákulum
+tabernákulum/Ma
 tabla/zZa
 tableau
 tablet
@@ -44214,8 +44159,8 @@ tenzid
 tenzor
 tenže
 Teodor/ca
-teofánia
-teokracia
+teofánia/Ua
+teokracia/Ua
 teológ/ca
 teológia/Ua
 teologicky/f
@@ -44227,9 +44172,9 @@ teoretický/YNd
 teoretička/zZa
 teoretik/Ca
 teoretikov/Yd
-teoretizujúci
+teoretizujúci/Yd
 teória/Ua
-teozofia
+teozofia/Ua
 tep/Ba
 tepelne/YNd
 tepelno
@@ -44386,7 +44331,7 @@ tetra
 tetracyklín/Ba
 tetraedrit
 tetralógia
-tetrarcha
+tetrarcha/Ha
 tetrarchia
 tetrov/La
 tetuška/zZa
@@ -44907,15 +44852,11 @@ trampe
 tramping/Ba
 trampolína/zZa
 trampoty/Qa
-tramvaj
 Tranoscius
-trans
-Trans
 transakcia/Ua
 transatlantický/YNd
-transcendencia
+transcendencia/Ua
 transcendentno/Ma
-transept
 transfer/Ba
 transformácia/Ua
 transformačný/YNd
@@ -46003,7 +45944,7 @@ ubytovací/Id
 ubytovanie/VNa
 ubytovaný/YNd
 ubytovať/WNe
-ubytovateľ
+ubytovateľ/ca
 ubytovňa/Ua
 ubytovní
 ucelený/YNd
@@ -46016,7 +45957,7 @@ uctievač/Ca
 uctievanie/Va
 uctievaný/YNd
 uctievať/XNe
-uctievateľ
+uctievateľ/ca
 uctime
 uctiť/ENe
 uctite
@@ -46265,7 +46206,7 @@ uchovanie/VNa
 uchovať/ENe
 uchovávanie/Va
 uchovávať/XNe
-uchovávateľ
+uchovávateľ/ca
 uchrániť/XNe
 uchvacujúca
 uchvacujúci
@@ -46342,7 +46283,7 @@ UKF/m
 ukladač
 ukladanie/VNa
 ukladať/ENe
-ukladateľ
+ukladateľ/ca
 úklon/Ba
 ukloniť/ENe
 ukojenie/Va
@@ -46652,7 +46593,7 @@ upír/Ca
 upírov/Yd
 úpis/Ba
 upísať/TNe
-upisovateľ
+upisovateľ/ca
 upíšu
 UPJŠ/m
 upláchnuť
@@ -46727,9 +46668,7 @@ upravovať/WNe
 upravujúci/YNd
 uprdnúť
 uprednostnenie/Va
-uprednostni
-uprednostniť/ENe
-uprednostnite
+uprednostniť/WNe
 uprednostňovanie/VNa
 uprednostňovať/WNe
 uprene/YNd
@@ -46826,9 +46765,7 @@ určitosť/Ka
 určitý/YNd
 určovanie/VNa
 určovať/WNe
-určovateľ
-určovateľom
-určovateľov
+určovateľ/ca
 určujúci/YNd
 urd
 urda
@@ -46904,16 +46841,13 @@ USD/m
 úsečka/zZa
 usedavo/Nf
 úsek/Ba
-usekávať
-usekli
-useknúť
+usekávať/XNe
+useknúť/WNe
 user
 uschnúť/WNe
-uschopniť
+uschopniť/ENe
 uschopňuje
 úschova/zZa
-uschovajte
-uschovávané
 úschovňa/Ua
 úschovného
 úschovnej
@@ -46947,7 +46881,7 @@ uskutočniteľnosť/Ka
 uskutočňovanie/VNa
 uskutočňovaný/YNd
 uskutočňovať/WNe
-uskutočňovateľ
+uskutočňovateľ/ca
 úslovie/Va
 úsluh
 úslužnosť/Ka
@@ -47190,8 +47124,7 @@ utláčanie/Va
 utláčaný/YNd
 utláčateľ/ca
 utláčateľov/Yd
-utlačovateľ
-utlačovateľmi
+utlačovateľ/ca
 útlak/Ba
 útlm/Ba
 utlmenie/Va
@@ -47448,8 +47381,7 @@ UŽ/m
 úžasnosť/Ka
 užasnuto
 úžasný/YNd
-úžer
-úžera/za
+úžera/zZa
 úžerník/Ca
 úžerníkov/Yd
 Užhorod/Ba
@@ -47644,9 +47576,8 @@ variantách
 variantmi
 variantnosť/Ka
 varič/Ja
-varieta
+varieta/zZa
 varieté
-Variety
 Varín
 Varína
 variola
@@ -47849,7 +47780,7 @@ vegetariánka/zZa
 vegetariánov/Yd
 vegetariánstvo/Ma
 vehementne/YNd
-vehikulum
+vehikulum/Ma
 Vechec
 vejár/Ja
 vejármi
@@ -47891,9 +47822,7 @@ velieť
 velikán/Ca
 velikánov/Yd
 velikánsky/YNd
-velín
-velína
-velíne
+velín/Ba
 veliť/ENe
 veliteľ/ca
 veliteľka/zZa
@@ -49142,7 +49071,6 @@ vsunúť/RNe
 vsunúť/WNe
 vsuvka/zZa
 VSŽ/m
-vš
 VŠ/m
 VŠA/m
 všade
@@ -49159,7 +49087,7 @@ všakver
 všakže
 všami
 VŠDS/m
-vše
+vše/f
 všedne/Nf
 všednosť/Ka
 všedný/YNd
@@ -49718,7 +49646,7 @@ vyjednávač/Ca
 vyjednávačov/Yd
 vyjednávanie/VNa
 vyjednávať/XNe
-vyjednávateľ
+vyjednávateľ/ca
 vyjmeme
 vyjmi
 vyjmite
@@ -49926,7 +49854,7 @@ vylúštenie/Va
 vymáhač/Ca
 vymáhanie/VNa
 vymáhať/XNe
-vymáhateľ
+vymáhateľ/ca
 vymáhateľnosť/Ka
 vymáchať
 vymaľovať/WNe
@@ -50855,7 +50783,7 @@ vyvolávajúci
 vyvolávajúcich
 vyvolávanie/Va
 vyvolávať/XNe
-vyvolávateľ
+vyvolávateľ/ca
 vyvolenec/Ca
 vyvolenie/Va
 vyvolený/YNd
@@ -51035,7 +50963,7 @@ vzdelaný/YNd
 vzdelávací/Id
 vzdelávanie/Va
 vzdelávať/XNe
-vzdelávateľ
+vzdelávateľ/ca
 vzdialene/PFd
 vzdialenosť/Ka
 vzdialenostne
@@ -51727,7 +51655,7 @@ zaistiť/ENe
 zaistite
 zaisťovací/Id
 zaisťovať/WNe
-zaisťovateľ
+zaisťovateľ/ca
 zajac/La
 zajace
 zajaci
@@ -52135,7 +52063,7 @@ zaostalec/Ca
 zaostalosť/Ka
 zaostalý/YNd
 zaostať/WNe
-zaostávajúci
+zaostávajúci/YNd
 zaostávanie/Va
 zaostávať/XNe
 zaostrenie/Va
@@ -52145,7 +52073,7 @@ záp
 ZAP/m
 zapáčiť/XNe
 západ/Ba
-zapadajúci
+zapadajúci/YNd
 zapadák
 zapadákov/Ba
 zapadať/ENe
@@ -52301,11 +52229,9 @@ zápražka/zZa
 záprdok/Oa
 zapredanec/Ca
 zapredať/ENe
-zapredávaní
-zapretie
+zapretie/Va
 zapriahnuť/WNe
 zapriasť
-zapríčinením
 zapríčinený/YNd
 zapríčiniť/ENe
 zapríčiňovať/WNe
@@ -52866,7 +52792,7 @@ zavŕšený/YNd
 zavŕšiť/XNe
 zavrť
 zavrtieť/RNe
-zavše
+zavše/f
 zavýjanie/Va
 zavýjať/XNe
 zavytie
