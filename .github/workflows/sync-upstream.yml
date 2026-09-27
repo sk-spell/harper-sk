@@ -24,7 +24,25 @@ jobs:
       - name: Fetch hunspell-sk and rebuild
         run: |
           make fetch
-          make clean build
+          make clean build retrim
+
+      # The data-quality workflow does not run on a pull request opened by this bot until
+      # someone approves it, so the rebuild checks itself before it proposes anything.
+      - name: Check the rebuilt data against hunspell
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y hunspell
+          curl -sSfL -o sk_full.txt \
+            https://raw.githubusercontent.com/hermitdave/FrequencyWords/master/content/2018/sk/sk_full.txt
+          {
+            echo '```'
+            python3 scripts/check_data.py precision --dict data/dictionary.dict \
+              --annotations data/annotations.json --hunspell upstream/hunspell-sk/sk_SK
+            python3 scripts/check_data.py coverage --dict data/dictionary.dict \
+              --annotations data/annotations.json --hunspell upstream/hunspell-sk/sk_SK \
+              --freq sk_full.txt
+            echo '```'
+          } 2>&1 | tee checks.md
 
       - name: Open a pull request if the data changed
         env:
@@ -53,6 +71,15 @@ jobs:
             --body "$(cat <<EOF
           Automated rebuild: \`sk-spell/hunspell-sk\` moved to \`${REV}\`, and
           regenerating the data produces a different result.
+
+          The trimmed build is rebuilt from the committed selection
+          (\`data/trimmed/keep_stems.txt\`), so entries hunspell-sk adds are not in it
+          until the trim is re-planned with \`make trim\`. A pull request that
+          deletes \`data/trimmed/\` is a bug in this workflow — do not merge it.
+
+          Checks against hunspell, run by this workflow:
+
+          $(cat checks.md)
 
           The diff below is generated output only — review it, do not edit it.
           If something looks wrong in the *words themselves*, the fix belongs in

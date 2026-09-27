@@ -87,7 +87,10 @@ the same word (`zlom` comes out of `zlo`, `zlom`, `zlomiť` and `zlý` alike), s
 breaks the spend down per part of speech and says the same thing in its header.
 
 `data/trimmed/keep_stems.txt` records exactly which entries survived, so a trim
-can be reproduced without access to the frequency lists.
+can be reproduced without access to the frequency lists: `make retrim` applies it
+to the current hunspell-sk source, and the weekly rebuild does exactly that. It
+does not re-plan, so entries hunspell-sk adds later stay out of the trimmed build
+until someone runs `make trim` with the lists again.
 
 **The frequency lists are a selection criterion only.** Not one word from them
 enters the data: every word still comes from hunspell-sk, and the lists merely
