@@ -202,7 +202,10 @@ def rule_morphology(flag, is_tags, scope):
         if 'participle' in is_ or not (persons or 'past' in is_):
             return None
         agr = OrderedDict()
-        if persons:
+        # A Slovak l-participle ("robil", "robila") does not mark person by itself;
+        # the auxiliary does ("robila som"). hunspell-sk tags first and second person
+        # only on the masculine -l form, so the past tense leaves person unknown.
+        if persons and 'past' not in is_:
             agr['person'] = persons[0] if len(persons) == 1 else persons
         agr['number'] = number
         genders = [GENDER[t] for t in GENDER if t in is_]
