@@ -32,9 +32,15 @@ is a hunspell convention Harper also expects.
 Optional coverage trimming: --keep-stems <file with lemmas> or --limit N.
 
 Usage: dic2dict.py <sk_SK.dic> [-o dictionary.dict] [--keep-stems f] [--limit N]
+                   [--morphology none|verbs|full --aff sk_SK.aff]
+
+With --morphology, each affix flag is replaced by the flags of its sub-classes
+(see aff2annotations.split_for_morphology); use the same value for both scripts.
 """
 import argparse, re, sys
 from collections import Counter
+
+import aff2annotations
 
 # Must stay in sync with aff2annotations.POS_FLAG.
 POS_FLAG = {
@@ -100,7 +106,17 @@ def main():
                     help='omit part-of-speech flags (plain spell-check test)')
     ap.add_argument('--source-rev', default='unknown',
                     help='revision of the hunspell-sk source (recorded in the header)')
+    ap.add_argument('--morphology', choices=('none', 'verbs', 'full'), default='none',
+                    help='must match the value given to aff2annotations.py')
+    ap.add_argument('--aff', help='sk_SK.aff, required with --morphology')
     a = ap.parse_args()
+
+    split_map = {}
+    if a.morphology != 'none':
+        if not a.aff:
+            ap.error('--morphology needs --aff')
+        affixes, _ = aff2annotations.parse_aff(a.aff)
+        _, split_map = aff2annotations.split_for_morphology(affixes, a.morphology)
 
     keep = None
     if a.keep_stems:
@@ -120,6 +136,7 @@ def main():
         pos_flag = '' if a.no_pos else POS_FLAG.get(pos or '', '')
         if pos and pos not in POS_FLAG:
             stats[f'unknown_pos:{pos}'] += 1
+        flags = ''.join(''.join(split_map.get(f, f)) for f in flags)
         all_flags = flags + pos_flag
         out.append(f"{stem}/{all_flags}" if all_flags else stem)
         stats['written'] += 1
