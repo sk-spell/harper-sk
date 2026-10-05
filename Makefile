@@ -15,6 +15,11 @@ HUNSPELL_SK_URL ?= https://github.com/sk-spell/hunspell-sk.git
 UPSTREAM        ?= upstream/hunspell-sk
 DATA            ?= data
 PYTHON          ?= python3
+# Carry case/number/gender/person from the affix rules into Harper (see
+# scripts/aff2annotations.py): none | verbs | full. `full` needs Harper support
+# for the extra cases, animacy and adjectives (Dronakurl/harper#11).
+MORPHOLOGY      ?= none
+MORPH_ARGS       = --morphology $(MORPHOLOGY) --aff $(UPSTREAM)/sk_SK.aff
 
 REV = $(shell git -C $(UPSTREAM) log -1 --format='%h (%ad)' --date=short 2>/dev/null || echo unknown)
 
@@ -39,10 +44,11 @@ $(DATA)/superlatives.tsv: $(UPSTREAM)/sk_SK.aff $(UPSTREAM)/sk_SK.dic scripts/ge
 
 $(DATA)/dictionary.dict: $(UPSTREAM)/sk_SK.dic scripts/dic2dict.py $(DATA)/superlatives.tsv
 	$(PYTHON) scripts/dic2dict.py $(UPSTREAM)/sk_SK.dic -o $@ --source-rev "$(REV)" \
-	  --extra-entries $(DATA)/superlatives.tsv
+	  --extra-entries $(DATA)/superlatives.tsv $(MORPH_ARGS)
 
 $(DATA)/annotations.json: $(UPSTREAM)/sk_SK.aff scripts/aff2annotations.py
-	$(PYTHON) scripts/aff2annotations.py $(UPSTREAM)/sk_SK.aff -o $@ --source-rev "$(REV)"
+	$(PYTHON) scripts/aff2annotations.py $(UPSTREAM)/sk_SK.aff -o $@ --source-rev "$(REV)" \
+	  --morphology $(MORPHOLOGY)
 
 # --- trimmed build ------------------------------------------------------------------
 #
@@ -87,7 +93,7 @@ $(TRIM)/keep_stems.txt: $(TRIM)/stem_freq.tsv $(TRIM)/costs.tsv scripts/plan_cut
 
 $(TRIM)/dictionary.dict: $(TRIM)/keep_stems.txt $(UPSTREAM)/sk_SK.dic scripts/dic2dict.py
 	$(PYTHON) scripts/dic2dict.py $(UPSTREAM)/sk_SK.dic -o $@ --source-rev "$(REV)" \
-	  --keep-stems $(TRIM)/keep_stems.txt --extra-entries $(DATA)/superlatives.tsv
+	  --keep-stems $(TRIM)/keep_stems.txt --extra-entries $(DATA)/superlatives.tsv $(MORPH_ARGS)
 
 # `make retrim` applies the committed selection (keep_stems.txt) to the current source and
 # needs no frequency lists, so the weekly rebuild can keep the trimmed build in step with
@@ -96,7 +102,7 @@ $(TRIM)/dictionary.dict: $(TRIM)/keep_stems.txt $(UPSTREAM)/sk_SK.dic scripts/di
 retrim: $(DATA)/superlatives.tsv
 	@test -f $(TRIM)/keep_stems.txt || { echo "no $(TRIM)/keep_stems.txt — run make trim first"; exit 1; }
 	$(PYTHON) scripts/dic2dict.py $(UPSTREAM)/sk_SK.dic -o $(TRIM)/dictionary.dict --source-rev "$(REV)" \
-	  --keep-stems $(TRIM)/keep_stems.txt --extra-entries $(DATA)/superlatives.tsv
+	  --keep-stems $(TRIM)/keep_stems.txt --extra-entries $(DATA)/superlatives.tsv $(MORPH_ARGS)
 
 # `clean` removes everything generated, but not the trim plan: keep_stems.txt and report.txt
 # are committed and cannot be rebuilt without the frequency lists. `clean-plan` removes them too.

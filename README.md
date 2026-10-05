@@ -40,6 +40,23 @@ Requires Python 3 and git; no third-party packages. The generated files record
 the exact hunspell-sk revision they came from in their header, so it is always
 possible to tell which upstream release a given build corresponds to.
 
+### Morphology (opt-in)
+
+hunspell-sk tags its affix rules with case, number, gender and person. Harper can
+carry these as word metadata, but only per affix class, so passing them on means
+splitting each class into one sub-class per tag signature:
+
+```sh
+make build MORPHOLOGY=verbs   # person, number, mood and past-tense gender of verbs
+make build MORPHOLOGY=full    # plus case, number, gender and animacy of nouns and adjectives
+```
+
+The word forms stay exactly the same; only the flags on each entry change. `verbs`
+works with Harper today. `full` needs the Locative, Instrumental and Vocative cases,
+an animacy axis and an adjective slot in Harper's morphology, proposed in
+[Dronakurl/harper#11](https://github.com/Dronakurl/harper/issues/11). The default is
+`none`.
+
 ## Staying in sync with hunspell-sk
 
 A scheduled workflow (`.github/workflows/sync-upstream.yml`) rebuilds the data
