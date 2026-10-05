@@ -30,11 +30,24 @@ Mapping (hunspell → Harper):
                                           no concept of it) and counted in the stats
     po:<pos> on a rule                   → target[].metadata (part of speech of the result)
 
+Morphology (--morphology verbs|full, off by default):
+    Harper attaches `target` metadata to a whole affix class, never to a single rule,
+    while hunspell-sk tags each rule with its own case, number, gender or person
+    (`is:genitive is:plural`). To carry those tags across, every class is split into
+    sub-classes, one per distinct tag signature, each under a new flag taken from the
+    Unicode Private Use Area (U+E000…). dic2dict.py replaces the original flag on each
+    entry with the flags of its sub-classes, so the set of word forms does not change.
+    `verbs` emits only what Harper already understands (person, number, imperative mood,
+    gender of the past tense). `full` adds noun and adjective case, number, gender and
+    animacy, which need the Locative/Instrumental/Vocative cases, the animacy axis and
+    the adjective slot proposed in Dronakurl/harper#11.
+
 A note on CIRCUMFIX: sk_SK.aff declares `CIRCUMFIX s`, and flag `s` appears as a
 continuation on PFX F (naj-/najne-). Harper does not support circumfixes, so those
 rules are flagged here and handled by the equivalence test, not by this script.
 
 Usage: aff2annotations.py <sk_SK.aff> [-o annotations.json] [--stats]
+                          [--morphology none|verbs|full]
 """
 import argparse, json, re, sys
 from collections import OrderedDict, Counter
@@ -137,9 +150,148 @@ def target_from_tags(rules):
     return []
 
 
+# --- morphology ---------------------------------------------------------------------
+#
+# The class → word class / gender / animacy tables follow doc/Flagy.Hints.md of
+# hunspell-sk, checked against the class headers and rule tags of sk_SK.aff
+# (Flagy.Hints.md reuses some letters, e.g. `b` and `P`; the .aff is authoritative).
+# Harper's variant names are kept in one place so they can follow Dronakurl/harper#11.
+
+NOUN_CLASSES = {
+    # flag: (gender, animacy)  — None = not determined by the class
+    'c': ('Masculine', 'Personal'),    # vz. chlap, N pl. -ia
+    'C': ('Masculine', 'Personal'),    # vz. chlap, N pl. -i
+    'H': ('Masculine', 'Personal'),    # vz. hrdina
+    'B': ('Masculine', 'Inanimate'),   # vz. dub
+    'b': ('Masculine', 'Inanimate'),   # vz. dub, G -u, L -e
+    'O': ('Masculine', 'Inanimate'),   # vz. dub, -ok, -el, -ol…
+    'J': ('Masculine', 'Inanimate'),   # vz. stroj
+    'L': ('Masculine', None),          # chlap and dub/stroj alike, some animals
+    'z': ('Feminine', None),           # vz. žena, singular
+    'Z': ('Feminine', None),           # vz. žena, plural
+    'U': ('Feminine', None),           # vz. ulica
+    'D': ('Feminine', None),           # vz. dlaň, idea
+    'K': ('Feminine', None),           # vz. gazdiná, kosť
+    'M': ('Neuter', None),             # vz. mesto
+    'S': ('Neuter', None),             # vz. srdce
+    'V': ('Neuter', None),             # vz. vysvedčenie
+    'A': ('Neuter', None),             # vz. dievča
+    'Q': (None, None),                 # plurale tantum (gender on the rule)
+    'q': (None, None),                 # plurale tantum (gender on the rule)
+}
+ADJECTIVE_CLASSES = {'Y', 'I', 'P'}
+VERB_CLASSES = {'E', 'R', 'W', 'T', 'X'}
+
+CASE = {'nominative': 'Nominative', 'genitive': 'Genitive', 'dative': 'Dative',
+        'accusative': 'Accusative', 'locative': 'Locative',
+        'instrumental': 'Instrumental', 'vocative': 'Vocative'}
+GENDER = {'masculine': 'Masculine', 'feminine': 'Feminine', 'neuter': 'Neuter'}
+PERSON = {'1st_person': 'First', '2nd_person': 'Second', '3rd_person': 'Third'}
+
+# First flag handed out to a sub-class. Private Use Area: never a letter, never '/'
+# or '#', which Harper's word list treats specially.
+SPLIT_FLAG_BASE = 0xE000
+
+
+def rule_morphology(flag, is_tags, scope):
+    """Harper `morphology` for one rule of class `flag`, or None if it says nothing."""
+    is_ = set(is_tags)
+    number = 'Plural' if 'plural' in is_ else 'Singular'
+    if flag in VERB_CLASSES:
+        persons = [PERSON[t] for t in PERSON if t in is_]
+        if 'participle' in is_ or not (persons or 'past' in is_):
+            return None
+        agr = OrderedDict()
+        if persons:
+            agr['person'] = persons[0] if len(persons) == 1 else persons
+        agr['number'] = number
+        genders = [GENDER[t] for t in GENDER if t in is_]
+        if genders:
+            agr['gender'] = genders[0]
+        out = OrderedDict([('verb', agr)])
+        if 'imperative' in is_:
+            out['mood'] = 'Imperative'
+        return out
+    if scope != 'full':
+        return None
+    cases = [CASE[t] for t in CASE if t in is_]
+    if not cases:
+        return None
+    agr = OrderedDict([('case', cases[0] if len(cases) == 1 else cases), ('number', number)])
+    genders = [GENDER[t] for t in GENDER if t in is_]
+    if flag in NOUN_CLASSES:
+        gender, animacy = NOUN_CLASSES[flag]
+        gender = genders[0] if genders else gender
+        if gender:
+            agr['gender'] = gender
+        if animacy:
+            agr['animacy'] = animacy
+        return OrderedDict([('noun', agr)])
+    if flag in ADJECTIVE_CLASSES:
+        # The base form is masculine; a rule without a gender tag keeps that.
+        agr['gender'] = genders[0] if genders else 'Masculine'
+        return OrderedDict([('adjective', agr)])
+    return None
+
+
+def split_for_morphology(affixes, scope):
+    """Split each class into one sub-class per morphology signature.
+
+    Returns (new_affixes, split_map), where split_map[flag] lists the flags that replace
+    `flag` on a dictionary entry. Rules that carry no morphology stay under the original
+    flag, so a class without any tags is left exactly as it was. Flags are handed out in
+    class order and first-occurrence order, so the output is deterministic.
+    """
+    new = OrderedDict()
+    split_map = OrderedDict()
+    next_flag = SPLIT_FLAG_BASE
+    for flag, a in affixes.items():
+        groups = OrderedDict()            # signature (json) → (morphology, rules)
+        plain = []
+        for r in a['rules']:
+            is_tags = [v for k, v in r['tags'] if k == 'is']
+            morph = rule_morphology(flag, is_tags, scope)
+            if morph is None:
+                plain.append(r)
+                continue
+            key = json.dumps(morph, sort_keys=True)
+            groups.setdefault(key, (morph, []))[1].append(r)
+        if not groups:
+            new[flag] = a
+            continue
+        flags = []
+        if plain:
+            new[flag] = dict(a, rules=plain)
+            flags.append(flag)
+        for morph, rules in groups.values():
+            sub = chr(next_flag)
+            next_flag += 1
+            label = ', '.join(f"{k}: {v}" for k, v in _flatten(morph))
+            new[sub] = dict(a, rules=rules,
+                            comment=f"sk affix class {flag} — {label}",
+                            morphology=morph)
+            flags.append(sub)
+        split_map[flag] = flags
+    return new, split_map
+
+
+def _flatten(morph):
+    for k, v in morph.items():
+        if isinstance(v, dict):
+            yield from _flatten(v)
+        else:
+            yield k, '/'.join(v) if isinstance(v, list) else v
+
+
 def build_annotations(affixes, source_rev='unknown'):
     out_aff = OrderedDict()
     for flag, a in affixes.items():
+        target = target_from_tags(a['rules'])
+        if a.get('morphology'):
+            if target:
+                target[0]['metadata']['morphology'] = a['morphology']
+            else:
+                target = [{'metadata': {'morphology': a['morphology']}}]
         out_aff[flag] = OrderedDict([
             ('#', a['comment'] or f"sk affix class {flag}"),
             ('kind', a['kind']),
@@ -150,7 +302,7 @@ def build_annotations(affixes, source_rev='unknown'):
                              ('condition', r['condition'])])
                 for r in a['rules']
             ]),
-            ('target', target_from_tags(a['rules'])),
+            ('target', target),
             ('base_metadata', {}),
             ('rename_ok', True),
         ])
@@ -192,9 +344,16 @@ def main():
     ap.add_argument('--stats', action='store_true')
     ap.add_argument('--source-rev', default='unknown',
                     help='revision of the hunspell-sk source (recorded in the header)')
+    ap.add_argument('--morphology', choices=('none', 'verbs', 'full'), default='none',
+                    help='split classes to carry case/number/gender/person (see above); '
+                         'dic2dict.py must be run with the same value')
     a = ap.parse_args()
 
     affixes, stats = parse_aff(a.aff)
+    if a.morphology != 'none':
+        affixes, split_map = split_for_morphology(affixes, a.morphology)
+        print(f"morphology ({a.morphology}): {len(split_map)} classes split into "
+              f"{sum(len(v) for v in split_map.values())}", file=sys.stderr)
     # do the affix flags and the POS flags collide?
     clash = set(affixes) & set(POS_FLAG.values())
     if clash:
