@@ -41,6 +41,11 @@ Morphology (--morphology verbs|full, off by default):
     gender of the past tense). `full` adds noun and adjective case, number, gender and
     animacy, which need the Locative/Instrumental/Vocative cases, the animacy axis and
     the adjective slot proposed in Dronakurl/harper#11.
+    No affix rule produces the dictionary entry itself, so with `full` the base form gets
+    its morphology from the class through `base_metadata`: nominative singular for nouns
+    (nominative plural for the plurale tantum classes Q and q), nominative singular
+    masculine for adjectives. Harper merges `base_metadata` into the entry only, never
+    into the forms built from it.
 
 A note on CIRCUMFIX: sk_SK.aff declares `CIRCUMFIX s`, and flag `s` appears as a
 continuation on PFX F (naj-/najne-). Harper does not support circumfixes, so those
@@ -179,6 +184,7 @@ NOUN_CLASSES = {
     'Q': (None, None),                 # plurale tantum (gender on the rule)
     'q': (None, None),                 # plurale tantum (gender on the rule)
 }
+PLURALE_TANTUM = {'Q', 'q'}
 ADJECTIVE_CLASSES = {'Y', 'I', 'P'}
 VERB_CLASSES = {'E', 'R', 'W', 'T', 'X'}
 
@@ -237,13 +243,38 @@ def rule_morphology(flag, is_tags, scope):
     return None
 
 
+def base_morphology(flag, scope):
+    """Harper `morphology` of the dictionary entry itself for class `flag`, or None.
+
+    The entry is the lemma of its paradigm: nominative singular for a noun (plural for
+    plurale tantum), nominative singular masculine for an adjective.
+    """
+    if scope != 'full':
+        return None
+    if flag in NOUN_CLASSES:
+        gender, animacy = NOUN_CLASSES[flag]
+        agr = OrderedDict([('case', 'Nominative'),
+                           ('number', 'Plural' if flag in PLURALE_TANTUM else 'Singular')])
+        if gender:
+            agr['gender'] = gender
+        if animacy:
+            agr['animacy'] = animacy
+        return OrderedDict([('noun', agr)])
+    if flag in ADJECTIVE_CLASSES:
+        return OrderedDict([('adjective', OrderedDict([
+            ('case', 'Nominative'), ('number', 'Singular'), ('gender', 'Masculine')]))])
+    return None
+
+
 def split_for_morphology(affixes, scope):
     """Split each class into one sub-class per morphology signature.
 
     Returns (new_affixes, split_map), where split_map[flag] lists the flags that replace
     `flag` on a dictionary entry. Rules that carry no morphology stay under the original
     flag, so a class without any tags is left exactly as it was. Flags are handed out in
-    class order and first-occurrence order, so the output is deterministic.
+    class order and first-occurrence order, so the output is deterministic. The morphology
+    of the base form (see base_morphology) goes on the first flag that replaces `flag`, so
+    every entry carrying the class gets it once.
     """
     new = OrderedDict()
     split_map = OrderedDict()
@@ -259,8 +290,9 @@ def split_for_morphology(affixes, scope):
                 continue
             key = json.dumps(morph, sort_keys=True)
             groups.setdefault(key, (morph, []))[1].append(r)
+        base = base_morphology(flag, scope)
         if not groups:
-            new[flag] = a
+            new[flag] = dict(a, base_morphology=base) if base else a
             continue
         flags = []
         if plain:
@@ -274,6 +306,8 @@ def split_for_morphology(affixes, scope):
                             comment=f"sk affix class {flag} — {label}",
                             morphology=morph)
             flags.append(sub)
+        if base:
+            new[flags[0]] = dict(new[flags[0]], base_morphology=base)
         split_map[flag] = flags
     return new, split_map
 
@@ -306,7 +340,8 @@ def build_annotations(affixes, source_rev='unknown'):
                 for r in a['rules']
             ]),
             ('target', target),
-            ('base_metadata', {}),
+            ('base_metadata', {'morphology': a['base_morphology']}
+                              if a.get('base_morphology') else {}),
             ('rename_ok', True),
         ])
     # properties: part-of-speech flags used in dictionary.dict (see dic2dict.py)
