@@ -66,6 +66,18 @@ of a generated diff, not a task anyone has to remember — and it costs the
 hunspell-sk side nothing. The workflow can also be triggered by hand from the
 Actions tab.
 
+## Trying Slovak in the browser and in Thunderbird
+
+The releases of this repository carry unofficial builds of Harper's browser extensions with Slovak support. They are for trying the Slovak data out until Slovak is part of an official Harper release.
+
+Thunderbird: open Add-ons and Themes, choose Install Add-on From File from the gear menu and pick the .xpi. Open a new message and write some Slovak.
+
+Firefox: once the signed .xpi is on the release page, open it in Firefox and confirm the installation. Harper only checks the sites it is enabled on, so allow the extension on the pages you want it for in the add-on permissions.
+
+Chrome: unzip the .zip, open chrome://extensions, turn on developer mode, choose Load unpacked and select the folder. Chrome shows a developer-mode warning on every start.
+
+The extensions have their own language setting. Pick Slovak there, or use the language shortcut once more than one language is chosen.
+
 ## Using the data in Harper
 
 Harper embeds its dictionary at compile time
@@ -92,15 +104,12 @@ The budget is spent where it buys the most text: value is the frequency of the
 whole paradigm, cost is the number of forms it expands into, and closed classes
 (pronouns, prepositions, conjunctions, particles, numerals) are always kept
 because they are cheap and their absence is the most conspicuous kind of false
-positive. At a 620 000-form budget the result keeps 58 836 entries and 608 139
-distinct forms — about 360 MB in Harper, in the same range as the German
-dictionary — while still covering 90.4 % of the running text of a reference
-corpus, against 91.5 % for the untrimmed build.
+positive. At a 620 000-form budget the result keeps 58 712 entries.
 
 The budget is counted per entry, before de-duplication, because a cost has to
 belong to exactly one entry to be knapsack-able: several entries can expand to
 the same word (`zlom` comes out of `zlo`, `zlom`, `zlomiť` and `zlý` alike), so
-620 000 budgeted forms are 608 139 distinct ones. `data/trimmed/report.txt`
+620 000 budgeted forms are fewer distinct ones. `data/trimmed/report.txt`
 breaks the spend down per part of speech and says the same thing in its header.
 
 `data/trimmed/keep_stems.txt` records exactly which entries survived, so a trim
