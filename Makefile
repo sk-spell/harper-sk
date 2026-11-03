@@ -18,7 +18,7 @@ PYTHON          ?= python3
 # Carry case/number/gender/person from the affix rules into Harper (see
 # scripts/aff2annotations.py): none | verbs | full. `full` needs Harper support
 # for the extra cases, animacy and adjectives (Dronakurl/harper#11).
-MORPHOLOGY      ?= none
+MORPHOLOGY      ?= full
 MORPH_ARGS       = --morphology $(MORPHOLOGY) --aff $(UPSTREAM)/sk_SK.aff
 
 REV = $(shell git -C $(UPSTREAM) log -1 --format='%h (%ad)' --date=short 2>/dev/null || echo unknown)
