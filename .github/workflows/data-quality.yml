@@ -43,6 +43,12 @@ jobs:
             https://raw.githubusercontent.com/hermitdave/FrequencyWords/master/content/2018/sk/sk_full.txt
           wc -l sk_full.txt
 
+      - name: Budget — does the trimmed build stay below Harper's table doubling?
+        run: |
+          python3 scripts/check_data.py budget \
+            --dict data/trimmed/dictionary.dict \
+            --annotations data/annotations.json
+
       - name: Precision — do we invent words?
         run: |
           python3 scripts/check_data.py precision \

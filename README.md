@@ -21,8 +21,8 @@ command.
 | `scripts/aff2annotations.py` | `sk_SK.aff` → `annotations.json` |
 | `scripts/gen_superlatives.py` | the `naj-` forms Harper's format cannot express |
 | `scripts/expand.py` | expand the data into word forms, without building Harper |
-| `scripts/check_data.py` | precision and coverage checks against hunspell |
-| `scripts/paradigm_cost.py`, `freq_join.py`, `plan_cut.py` | the trim |
+| `scripts/check_data.py` | precision and coverage checks against hunspell, memory budget of the trim |
+| `scripts/freq_join.py`, `plan_partial.py`, `apply_plan.py` | the trim |
 | `Makefile` | fetch the source, rebuild, trim |
 
 Both data files are generated. Do not edit them by hand — fix the generator, or
@@ -111,26 +111,45 @@ resident — which is more than an editor plugin can ask for. `make trim` theref
 produces a smaller build under a budget of forms:
 
 ```sh
-make trim FREQ_SNK=../snk_lemma.txt.bz2 FREQ_OS=../sk_full.txt BUDGET=620000
+make trim FREQ_SNK=../snk_lemma.txt.bz2 FREQ_OS=../sk_full.txt BUDGET=900000
 ```
 
-The budget is spent where it buys the most text: value is the frequency of the
-whole paradigm, cost is the number of forms it expands into, and closed classes
-(pronouns, prepositions, conjunctions, particles, numerals) are always kept
-because they are cheap and their absence is the most conspicuous kind of false
-positive. At a 620 000-form budget the result keeps 58 712 entries.
+The trim keeps paradigm cells, not whole entries. With `--morphology full` every
+inflection class is split into sub-classes, one per case, number and gender, each
+with its own flag, so an entry can keep the cells running text uses and drop the
+rest: plain data, nothing Harper has to support. A whole adjective costs about 50
+forms and text uses a handful of them, so the same memory holds far more words.
+Each cell is valued by how often its forms occur, and where the subtitles never saw
+a form, by the lemma's frequency times the share such a cell usually carries. The
+flags that hold the base form's own morphology always stay with it, and so does every
+class whose forms are in the build anyway, so a kept form keeps all its readings
+(`pekného` stays both accusative and genitive). Closed classes (pronouns,
+prepositions, conjunctions, particles, numerals) are kept whole.
+Valuing forms rather than lemmas also keeps frequent words that hunspell-sk only has
+as a form of a rare entry: `tomu` is the genitive of `tomus` there, `späť` an
+imperative of `spätiť`, and a cut by lemma frequency dropped both.
 
-The budget is counted per entry, before de-duplication, because a cost has to
-belong to exactly one entry to be knapsack-able: several entries can expand to
-the same word (`zlom` comes out of `zlo`, `zlom`, `zlomiť` and `zlý` alike), so
-620 000 budgeted forms are fewer distinct ones. `data/trimmed/report.txt`
-breaks the spend down per part of speech and says the same thing in its header.
+Measured on text that played no part in the selection (office documents and
+Slovak news), cells instead of entries halved the words the trim wrongly flags at
+the same memory. The cost is a new kind of miss: an entry is in, one of its rarer
+forms is not, and the first suggestion is then often another form of the same
+word. A larger budget reduces both, which is why it is set close to Harper's limit.
 
-`data/trimmed/keep_stems.txt` records exactly which entries survived, so a trim
-can be reproduced without access to the frequency lists: `make retrim` applies it
-to the current hunspell-sk source, and the weekly rebuild does exactly that. It
-does not re-plan, so entries hunspell-sk adds later stay out of the trimmed build
-until someone runs `make trim` with the lists again.
+`BUDGET` counts distinct word forms, which is what Harper's memory scales with.
+Harper keeps its words in a hash table that doubles above 917 504 words; resident
+memory for Slovak then jumps from about 415 MB to about 785 MB. 900 000 forms are
+about 898 000 words in Harper. `check_data.py budget` counts the words the way
+Harper does (case folded) and fails above 910 000, in `make trim`, `make retrim`
+and in CI, so a re-plan or a growing source cannot cross the line unnoticed.
+`data/trimmed/report.txt` shows how many entries are kept whole and how many in part.
+
+`data/trimmed/keep_entries.tsv` records the plan entry by entry: which entries stay,
+and of a partial one, which affix classes. Classes are named by a short hash of
+their description in `annotations.json`, so the plan survives a renumbering of the
+sub-class flags. A trim can therefore be reproduced without the frequency lists:
+`make retrim` applies the plan to the current data, and the weekly rebuild does
+exactly that. It does not re-plan, so entries hunspell-sk adds later stay out of
+the trimmed build until someone runs `make trim` with the lists again.
 
 **The frequency lists are a selection criterion only.** Not one word from them
 enters the data: every word still comes from hunspell-sk, and the lists merely
@@ -139,7 +158,7 @@ lemma frequency list of the prim-11.0-public-all corpus, Slovak National Corpus,
 Ľ. Štúr Institute of Linguistics, Slovak Academy of Sciences, v. v. i.,
 <https://korpus.sk>, with the OpenSubtitles frequency list
 ([hermitdave/FrequencyWords](https://github.com/hermitdave/FrequencyWords), MIT)
-as a secondary source for word forms the lemma list does not cover.
+valuing individual word forms.
 
 ## How faithful is the translation
 

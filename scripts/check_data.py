@@ -35,6 +35,13 @@ losing `Alma-atanásobný` are not the same event.
                             --hunspell upstream/hunspell-sk/sk_SK
     check_data.py coverage  --dict ... --annotations ... --hunspell ... --freq sk_full.txt
 
+A third check guards the trimmed build's memory rather than its translation:
+
+  budget     How many words does Harper hold? Counted as Harper does (case folded, see
+             HARPER_NORMALISE) and failed below the size at which Harper's word table doubles.
+
+    check_data.py budget --dict data/trimmed/dictionary.dict --annotations data/annotations.json
+
 Exit code 1 when a threshold is exceeded.
 """
 import argparse
@@ -135,9 +142,42 @@ def cmd_coverage(a):
     return 0
 
 
+# Harper's WordId (harper-core/src/spell/word_id.rs): the spelling with typographic quotes and
+# dashes normalised, then lower-cased. Two forms with the same key are one word in Harper.
+HARPER_NORMALISE = str.maketrans({"\u2018": "'", "\u2019": "'", "\u02BC": "'", "\uFF07": "'",
+                                  "\u201C": '"', "\u201D": '"', "\uFF02": '"',
+                                  "\u2013": "-", "\u2014": "-", "\u2212": "-", "\uFF0D": "-"})
+
+# Harper keeps its words in a hashbrown HashMap (power-of-two buckets, 7/8 load), and holds
+# the curated dictionary twice (Automattic/harper#4071). At 2^20 buckets the table takes
+# 917 504 words; one word more doubles it, and Slovak's resident memory jumps from ~415 MB to
+# ~785 MB (measured 2026-11-05: 914 267 words 414.9 MB, 919 260 words 785.2 MB).
+HASHMAP_LIMIT = 917_504
+
+
+def cmd_budget(a):
+    forms = expand_all(a.dict, a.annotations)
+    words = len({f.translate(HARPER_NORMALISE).lower() for f in forms})
+    print(f"distinct forms: {len(forms):,} · words as Harper counts them: {words:,} · "
+          f"limit {a.max_words:,} (table doubles above {HASHMAP_LIMIT:,})")
+    if words > a.max_words:
+        print(f"FAIL: {words - a.max_words:,} words over the limit — lower BUDGET in the Makefile "
+              f"and re-plan (make trim)")
+        return 1
+    print(f"OK: {a.max_words - words:,} words of headroom")
+    return 0
+
+
 def main():
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
+
+    p = sub.add_parser("budget")
+    p.add_argument("--dict", required=True)
+    p.add_argument("--annotations", required=True)
+    p.add_argument("--max-words", type=int, default=910_000,
+                   help="fail above this many words as Harper counts them "
+                        f"(default 910 000, below the {HASHMAP_LIMIT:,} at which memory doubles)")
 
     for name in ("precision", "coverage"):
         p = sub.add_parser(name)
@@ -155,6 +195,8 @@ def main():
                            help="fail above this share of known running text left uncovered")
 
     a = ap.parse_args()
+    if a.cmd == "budget":
+        return cmd_budget(a)
     return cmd_precision(a) if a.cmd == "precision" else cmd_coverage(a)
 
 

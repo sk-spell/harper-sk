@@ -32,7 +32,7 @@ substitute: Harper would cross-multiply `naj-` with the entire declension and ac
 
 So the superlatives are materialised here: every form produced by a rule whose continuation
 flag contains `F` gets `naj` and `najne` variants, emitted as flag-less entries. They cost one
-word form each, so the frequency cut (`plan_cut.py`) can price them individually and keep the
+word form each, so the frequency cut (`plan_partial.py`) can price them individually and keep the
 common ones (`najlepší`, `najväčšia`) while dropping the long tail.
 
 Verified against the source: `hunspell -d sk_SK -l` accepts `najčastejšie`, `najkrajší`,
