@@ -1,29 +1,20 @@
-# What the budget bought, per part of speech. Both columns count deliberately:
-#
-#   stems  distinct stem strings, not dictionary entries. A stem the .dic lists several
-#          times (homographs carrying different flags) is one row and one keep-or-drop
-#          decision, because `dic2dict --keep-stems` matches by the stem string.
-#
-#   forms  summed per entry, before de-duplication: several entries can expand to the
-#          same word (`zlom` comes out of `zlo`, `zlom`, `zlomiť` and `zlý` alike). The
-#          budget is spent in this currency on purpose — a cost has to belong to exactly
-#          one entry to be knapsack-able — so these totals run some 1.5 % above the
-#          number of distinct forms the build ends up holding. For that number, expand
-#          the result: `expand.py dictionary.dict annotations.json | sort -u | wc -l`.
+# Trim plan: budget 900,000 distinct word forms, 900,000 used.
+# Entries kept whole: 45,376 · kept in part (some paradigm cells only): 55,745.
+# Distinct forms are what Harper's memory scales with; Harper itself counts slightly
+# fewer words, because it folds case (Automattic/harper#2411) — see check_data.py budget.
 
-pos             stems     kept      %      forms       kept      %
-adjective     673,495   10,116   1.5%  1,982,686    262,562  13.2%
-verb           15,993    4,797  30.0%    494,582    147,481  29.8%
-noun           39,634   18,868  47.6%    353,785    162,800  46.0%
-(none)         65,947   20,260  30.7%     67,063     20,938  31.2%
-number          2,100    2,100 100.0%     22,674     22,674 100.0%
-adverb          2,034    1,322  65.0%      4,400      2,442  55.5%
-acronym           926      759  82.0%        936        765  81.7%
-pronoun            77       77 100.0%        131        131 100.0%
-adjectiv           25        1   4.0%         74         50  67.6%
-preposition        58       58 100.0%         73         73 100.0%
-conjunction        42       42 100.0%         44         44 100.0%
-interjection       24       24 100.0%         24         24 100.0%
-particle           13       13 100.0%         15         15 100.0%
-participle          1        1 100.0%          1          1 100.0%
-TOTAL         800,369   58,438   7.3%  2,926,488    620,000  21.2%
+pos           entries    whole  partial
+adjective     673,942    7,544   19,868
+(none)         65,956   23,798      112
+noun           39,819    8,607   22,753
+verb           16,331    1,330   12,215
+number          2,102    2,102        0
+adverb          2,060      899      796
+acronym           936      834        0
+pronoun           107      107        0
+preposition        73       73        0
+conjunction        43       43        0
+adjectiv           25        0        1
+interjection       24       24        0
+particle           14       14        0
+participle          1        1        0

@@ -47,9 +47,9 @@ Generator and build tooling — Apache License 2.0
     scripts/gen_superlatives.py
     scripts/expand.py
     scripts/check_data.py
-    scripts/paradigm_cost.py
     scripts/freq_join.py
-    scripts/plan_cut.py
+    scripts/plan_partial.py
+    scripts/apply_plan.py
     Makefile
 
 Copyright 2026 Branislav Klocok.

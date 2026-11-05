@@ -34,7 +34,7 @@ Output (TSV, one row per .dic entry):
 
 *_match:  exact | lower | none   (`lower` = matched case-insensitively)
 The two frequency columns come from different corpora and are NOT comparable as raw
-numbers — normalisation is done downstream in plan_cut.py.
+numbers — normalisation is done downstream in plan_partial.py.
 """
 import argparse
 import bz2

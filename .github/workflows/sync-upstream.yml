@@ -73,7 +73,7 @@ jobs:
           regenerating the data produces a different result.
 
           The trimmed build is rebuilt from the committed selection
-          (\`data/trimmed/keep_stems.txt\`), so entries hunspell-sk adds are not in it
+          (\`data/trimmed/keep_entries.tsv\`), so entries hunspell-sk adds are not in it
           until the trim is re-planned with \`make trim\`. A pull request that
           deletes \`data/trimmed/\` is a bug in this workflow — do not merge it.
 
