@@ -15,7 +15,7 @@ command.
 | Path | What it is |
 |---|---|
 | `data/dictionary.dict` | word list — 800 386 entries, expanding to 2 877 771 word forms |
-| `data/annotations.json` | affix classes — 30 classes, 3 458 rules |
+| `data/annotations.json` | affix classes — 30 classes, 3 458 rules; suggestion hints (REP, MAP, KEY, TRY) |
 | `data/trimmed/dictionary.dict` | the same, trimmed to a budget of word forms (see below) |
 | `scripts/dic2dict.py` | `sk_SK.dic` → `dictionary.dict` |
 | `scripts/aff2annotations.py` | `sk_SK.aff` → `annotations.json` |
@@ -56,6 +56,20 @@ works with Harper today. `full` needs the Locative, Instrumental and Vocative ca
 an animacy axis and an adjective slot in Harper's morphology, proposed in
 [Dronakurl/harper#11](https://github.com/Dronakurl/harper/issues/11). The default is
 `none`.
+
+## Suggestion hints
+
+`annotations.json` also carries a `suggestions` section with the directives hunspell uses
+to rank its suggestions: the 53 `REP` pairs, the 17 `MAP` groups of related letters
+(`a á ä`, `t ť`, …), the `KEY` keyboard rows and the `TRY` letter order from `sk_SK.aff`.
+A reader that does not know the section ignores it. The importer works for any hunspell
+dictionary and honours its `SET` encoding:
+
+```sh
+python3 scripts/aff2annotations.py path/to/xx_XX.aff --suggestions-only -o hints.json
+```
+
+Pass `--no-suggestions` to leave the section out.
 
 ## Staying in sync with hunspell-sk
 
