@@ -94,6 +94,73 @@ DATA_HEADER = [
     "GENERATED FILE — do not edit by hand. Rebuild with scripts/aff2annotations.py.",
 ]
 
+def _aff_encoding(raw):
+    """The encoding named by the SET directive (hunspell default: ISO-8859-1)."""
+    for line in raw.decode('latin-1').splitlines():
+        parts = line.split()
+        if len(parts) >= 2 and parts[0] == 'SET':
+            name = parts[1].upper().replace('UTF8', 'UTF-8')
+            return {'ISO8859-1': 'iso-8859-1', 'ISO8859-2': 'iso-8859-2',
+                    'ISO8859-15': 'iso-8859-15', 'MICROSOFT-CP1251': 'cp1251',
+                    'KOI8-R': 'koi8-r', 'KOI8-U': 'koi8-u'}.get(name, name.lower())
+    return 'iso-8859-1'
+
+
+def _map_group(spec):
+    """One MAP entry: single characters, or several characters in parentheses.
+
+    'aáä' -> ['a', 'á', 'ä'];  '(hc)(ch)' -> ['hc', 'ch'];  'ß(ss)' -> ['ß', 'ss']
+    """
+    group, i = [], 0
+    while i < len(spec):
+        if spec[i] == '(':
+            j = spec.index(')', i)
+            group.append(spec[i + 1:j])
+            i = j + 1
+        else:
+            group.append(spec[i])
+            i += 1
+    return group
+
+
+def parse_suggestion_hints(path):
+    """Import hunspell's suggestion directives from any .aff file.
+
+    Returns the `suggestions` section for annotations.json, with only the
+    directives the file has:
+      rep  -- REP pairs [from, to]; '^'/'$' anchor to the word start/end and
+              '_' stands for a space, exactly as in hunspell
+      map  -- MAP groups of related characters or character sequences
+      key  -- KEY keyboard rows (hunspell's '|' separator)
+      try  -- TRY characters, most frequent first
+    The language does not matter: the file's own SET encoding is honoured.
+    """
+    with open(path, 'rb') as f:
+        raw = f.read()
+    text = raw.decode(_aff_encoding(raw))
+    hints = OrderedDict()
+    rep, maps = [], []
+    for line in text.splitlines():
+        parts = line.split('#', 1)[0].split() if not line.lstrip().startswith('#') else []
+        if not parts:
+            continue
+        # The first REP/MAP line holds the entry count only.
+        if parts[0] == 'REP' and len(parts) >= 3:
+            rep.append([parts[1], parts[2]])
+        elif parts[0] == 'MAP' and len(parts) >= 2 and not parts[1].isdigit():
+            maps.append(_map_group(parts[1]))
+        elif parts[0] == 'KEY' and len(parts) >= 2:
+            hints['key'] = parts[1].split('|')
+        elif parts[0] == 'TRY' and len(parts) >= 2:
+            hints['try'] = parts[1]
+    if rep:
+        hints['rep'] = rep
+    if maps:
+        hints['map'] = maps
+    order = ['rep', 'map', 'key', 'try']
+    return OrderedDict((k, hints[k]) for k in order if k in hints)
+
+
 HEADER_RE = re.compile(r'^(SFX|PFX)\s+(\S+)\s+([YN])\s+(\d+)')
 TAG_RE = re.compile(r'\b(po|is|ts|tp):([a-z_0-9]+)')
 
@@ -320,7 +387,7 @@ def _flatten(morph):
             yield k, '/'.join(v) if isinstance(v, list) else v
 
 
-def build_annotations(affixes, source_rev='unknown'):
+def build_annotations(affixes, source_rev='unknown', suggestions=None):
     out_aff = OrderedDict()
     for flag, a in affixes.items():
         target = target_from_tags(a['rules'])
@@ -353,11 +420,16 @@ def build_annotations(affixes, source_rev='unknown'):
                 ('#', f'{pos} property (Slovak)'),
                 ('metadata', dict(meta)),
             ])
-    return OrderedDict([
+    out = OrderedDict([
         ('#', DATA_HEADER + [f'Source revision: {source_rev}']),
         ('affixes', out_aff),
         ('properties', props),
     ])
+    # Suggestion hints (REP/MAP/KEY/TRY), read by Harper's suggestion ranking.
+    # Optional: a reader that does not know the key ignores it, like "#".
+    if suggestions:
+        out['suggestions'] = suggestions
+    return out
 
 
 # Part-of-speech flags used in dictionary.dict.
@@ -385,7 +457,19 @@ def main():
     ap.add_argument('--morphology', choices=('none', 'verbs', 'full'), default='none',
                     help='split classes to carry case/number/gender/person (see above); '
                          'dic2dict.py must be run with the same value')
+    ap.add_argument('--no-suggestions', action='store_true',
+                    help='leave out the suggestions section (REP/MAP/KEY/TRY)')
+    ap.add_argument('--suggestions-only', action='store_true',
+                    help='write only the suggestions section of the given .aff '
+                         '(works for any hunspell dictionary)')
     a = ap.parse_args()
+
+    if a.suggestions_only:
+        with open(a.out, 'w', encoding='utf-8') as f:
+            json.dump({'suggestions': parse_suggestion_hints(a.aff)}, f,
+                      ensure_ascii=False, indent=2)
+            f.write('\n')
+        return
 
     affixes, stats = parse_aff(a.aff)
     if a.morphology != 'none':
@@ -397,12 +481,17 @@ def main():
     if clash:
         print(f"⚠️  affix×POS flag COLLISION: {sorted(clash)} — adjust POS_FLAG!", file=sys.stderr)
 
-    ann = build_annotations(affixes, a.source_rev)
+    suggestions = None if a.no_suggestions else parse_suggestion_hints(a.aff)
+    ann = build_annotations(affixes, a.source_rev, suggestions)
     with open(a.out, 'w', encoding='utf-8') as f:
         json.dump(ann, f, ensure_ascii=False, indent=2)
         f.write('\n')
 
     print(f"affix classes: {len(ann['affixes'])}  properties: {len(ann['properties'])}", file=sys.stderr)
+    if 'suggestions' in ann:
+        sg = ann['suggestions']
+        print(f"suggestions: REP {len(sg.get('rep', []))}  MAP {len(sg.get('map', []))}  "
+              f"KEY {len(sg.get('key', []))} rows  TRY {len(sg.get('try', ''))} chars", file=sys.stderr)
     print(f"rules: {stats['rules']}  continuation flags: {stats['continuation_flags']}", file=sys.stderr)
     if a.stats:
         for flag, x in affixes.items():
