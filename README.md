@@ -86,11 +86,11 @@ The releases of this repository carry unofficial builds of Harper's browser exte
 
 Thunderbird: open Add-ons and Themes, choose Install Add-on From File from the gear menu and pick the .xpi. Open a new message and write some Slovak.
 
-Firefox: once the signed .xpi is on the release page, open it in Firefox and confirm the installation. Harper only checks the sites it is enabled on, so allow the extension on the pages you want it for in the add-on permissions.
+Firefox: open the signed .xpi from the release page in Firefox and confirm the installation. Harper only checks the sites it is enabled on, so allow the extension on the pages you want it for in the add-on permissions.
 
 Chrome: unzip the .zip, open chrome://extensions, turn on developer mode, choose Load unpacked and select the folder. Chrome shows a developer-mode warning on every start.
 
-The extensions have their own language setting. Pick Slovak there, or use the language shortcut once more than one language is chosen.
+The extensions start in the language of the browser's or Thunderbird's interface. If that is not Slovak, Harper starts in English, underlines most Slovak words and shows US in the badge next to the text field. To switch, click the Harper button in the toolbar, choose Settings and, under Languages, pick Slovenčina from "Add a language…". Adding it does not switch yet: put the cursor in a text field and press Ctrl+Shift+Space, which moves between the chosen languages. The first switch can take several seconds while the Slovak dictionary loads, and the badge then shows SK.
 
 ## Using the data in Harper
 
