@@ -16,6 +16,10 @@ in this repository (`../scripts/`, `../data/`, MPL-2.0); the plugin code is Apac
 - `SlovakSpellCheck`: flags words that are not in the dictionary and suggests corrections, ranked
   with the hunspell-sk suggestion hints (REP, MAP, KEY, TRY) in `../data/annotations.json`.
 - Weir rules in `src/linting/weir_rules/` (one example so far).
+- Every message exists in Slovak and English (`src/messages.rs`; a Weir rule carries
+  `messageSk` next to `message`). They are Slovak, the language of the text, until the host
+  passes the language of its interface, which the plugin API cannot do yet; then a Slovak
+  interface gets Slovak messages and any other interface English ones.
 - Language detection (`detect_with`): Slovak letters (ľ, ĺ, ŕ, ô, and ä next to another Slovak
   letter) answer 0.97, letters shared with Czech 0.9, common Slovak words 0.85 or 0.6. Czech and
   Polish letters rule Slovak out.

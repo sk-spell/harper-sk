@@ -1,6 +1,7 @@
 expr main (v dnes)
 
 let message "The correct phrase is `dnes` without the preposition `v`."
+let messageSk "Správne je `dnes` bez predložky `v`."
 let description "Corrects the redundant preposition `v` before `dnes` (today). In Slovak, `dnes` is used standalone."
 let kind "Redundancy"
 let becomes "dnes"

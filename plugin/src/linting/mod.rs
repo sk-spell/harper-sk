@@ -10,11 +10,20 @@ use harper_core::spell::Dictionary;
 
 use slovak_spell_check::SlovakSpellCheck;
 
-/// Every Slovak linter, all enabled, checking words against `dictionary`.
-pub fn new_curated_slovak(dictionary: Arc<impl Dictionary + 'static>) -> LintGroup {
+use crate::messages::MessageLanguage;
+
+/// Every Slovak linter, all enabled, checking words against `dictionary` and writing its
+/// messages in `language`.
+pub fn new_curated_slovak(
+    dictionary: Arc<impl Dictionary + 'static>,
+    language: MessageLanguage,
+) -> LintGroup {
     let mut group = LintGroup::empty();
-    group.merge_from(weir_rules::lint_group());
-    group.add("SlovakSpellCheck", SlovakSpellCheck::new(dictionary));
+    group.merge_from(weir_rules::lint_group(language));
+    group.add(
+        "SlovakSpellCheck",
+        SlovakSpellCheck::in_language(dictionary, language),
+    );
     group.set_all_rules_to(Some(true));
     group
 }
