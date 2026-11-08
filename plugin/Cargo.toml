@@ -1,0 +1,43 @@
+[package]
+name = "harper-sk"
+version = "0.1.0"
+edition = "2024"
+description = "Slovak language plugin for Harper, built as a WebAssembly module."
+license = "Apache-2.0"
+repository = "https://github.com/sk-spell/harper-sk"
+publish = false
+
+[lib]
+name = "harper_sk"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+# Pinned to a revision of the feature/language-plugins branch of Dronakurl/harper, which holds the
+# plugin API (Dronakurl/harper#14) and the harper-core this plugin is built against.
+harper-core = { git = "https://github.com/Dronakurl/harper", rev = "2bf47d8cf407c3159bdb4e7f96a25a81b667b942", default-features = false, features = ["concurrent", "language-bits"] }
+harper-plugin-api = { git = "https://github.com/Dronakurl/harper", rev = "2bf47d8cf407c3159bdb4e7f96a25a81b667b942", features = ["core"] }
+fst = "0.4.7"
+hashbrown = { version = "0.16.1", features = ["serde"] }
+serde_json = "1.0.150"
+# Needed on wasm32-unknown-unknown, where there is no operating system to ask for randomness.
+getrandom02 = { package = "getrandom", version = "0.2", features = ["custom"] }
+getrandom03 = { package = "getrandom", version = "0.3" }
+
+[dev-dependencies]
+harper-plugin-host = { git = "https://github.com/Dronakurl/harper", rev = "2bf47d8cf407c3159bdb4e7f96a25a81b667b942" }
+
+[features]
+# Build with the full hunspell-sk word list (data/dictionary.dict) instead of the trimmed one
+# (data/trimmed/dictionary.dict). Which one ships is not decided yet.
+full = []
+
+[profile.release]
+opt-level = 3
+panic = "abort"
+lto = "fat"
+codegen-units = 1
+
+[profile.test]
+opt-level = 3
+
+[workspace]
