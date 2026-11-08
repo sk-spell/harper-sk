@@ -1,0 +1,59 @@
+# SPDX-License-Identifier: Apache-2.0
+#
+# Build and test the Harper language plugin in plugin/: formatting and clippy, the native
+# tests, then the WebAssembly module, loaded through harper-plugin-host the way harper-ls
+# loads it. Runs when the plugin or the data it embeds change.
+
+name: Plugin
+
+on:
+  push:
+    paths:
+      - 'plugin/**'
+      - 'data/**'
+      - '.github/workflows/plugin.yml'
+  pull_request:
+    paths:
+      - 'plugin/**'
+      - 'data/**'
+      - '.github/workflows/plugin.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: plugin
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+          components: rustfmt, clippy
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: plugin
+
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: just
+
+      - name: Format and clippy
+        run: just check
+
+      - name: Native tests
+        run: just test
+
+      # Bakes the dictionary pack, builds harper_sk.wasm and loads it through the host. The
+      # host tests fail rather than skip in CI when the module is missing.
+      - name: Build the module and test it through the host
+        run: just test-plugin
+
+      - name: Module size
+        run: ls -l target/wasm32-unknown-unknown/release/harper_sk.wasm
