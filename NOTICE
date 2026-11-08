@@ -60,6 +60,22 @@ contributed to Harper <https://github.com/Automattic/harper> itself, which
 is Apache-2.0 licensed.
 
 
+Harper language plugin — Apache License 2.0
+-------------------------------------------
+
+    plugin/  (all files)
+
+Copyright 2026 Branislav Klocok.
+Full licence text: LICENSE-APACHE-2.0
+
+plugin/src/spell/compact_dict.rs and plugin/src/wasm_support.rs are copied
+from Dronakurl/harper-german <https://github.com/Dronakurl/harper-german>,
+Apache-2.0; the plugin as a whole follows that project's structure.
+
+The built module (harper-sk.wasm) embeds data/trimmed/dictionary.dict and
+data/annotations.json, so the MPL-2.0 terms above apply to that part of it.
+
+
 On combining the two
 --------------------
 

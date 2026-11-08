@@ -92,6 +92,14 @@ Chrome: unzip the .zip, open chrome://extensions, turn on developer mode, choose
 
 The extensions start in the language of the browser's or Thunderbird's interface. If that is not Slovak, Harper starts in English, underlines most Slovak words and shows US in the badge next to the text field. To switch, click the Harper button in the toolbar, choose Settings and, under Languages, pick Slovenčina from "Add a language…". Adding it does not switch yet: put the cursor in a text field and press Ctrl+Shift+Space, which moves between the chosen languages. The first switch can take several seconds while the Slovak dictionary loads, and the badge then shows SK.
 
+## Harper language plugin
+
+[`plugin/`](plugin/) builds `harper-sk.wasm`, Slovak as a language plugin for
+Harper's plugin host (Dronakurl's
+[language plugin system](https://github.com/Dronakurl/harper/blob/feature/language-plugins/packages/web/src/routes/docs/integrations/language-plugins/%2Bpage.md)).
+It embeds the data from this repository; numbered releases carry
+`harper-sk.wasm` and `harper-sk.wasm.sha256`. See [`plugin/README.md`](plugin/README.md).
+
 ## Using the data in Harper
 
 Harper embeds its dictionary at compile time
@@ -196,6 +204,8 @@ This repository is deliberately mixed, file by file:
 - **`data/` — MPL-2.0**, inherited from hunspell-sk. Not relicensed.
 - **`scripts/`, `Makefile` — Apache-2.0**, so the tooling can be contributed to
   Harper itself if that turns out to be useful.
+- **`plugin/` — Apache-2.0**, like Harper; two files come from
+  [harper-german](https://github.com/Dronakurl/harper-german).
 
 MPL-2.0 is a file-level copyleft licence and is compatible with Apache-2.0 in
 this arrangement: the data files stay under MPL-2.0 wherever they travel,
