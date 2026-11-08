@@ -8,6 +8,7 @@ name: Plugin
 
 on:
   push:
+    branches: [main]
     paths:
       - 'plugin/**'
       - 'data/**'
