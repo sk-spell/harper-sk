@@ -4,6 +4,7 @@ use harper_core::linting::{Lint, LintKind, Linter, Suggestion};
 use harper_core::spell::{Dictionary, SuggestionHints, suggest_correct_spelling_with_hints};
 use harper_core::{Document, TokenStringExt};
 
+use crate::messages::MessageLanguage;
 use crate::spell::slovak_suggestion_hints;
 
 /// Flags words that are not in the Slovak dictionary and suggests corrections, ranked with the
@@ -14,13 +15,45 @@ where
 {
     dictionary: T,
     hints: &'static SuggestionHints,
+    language: MessageLanguage,
 }
 
 impl<T: Dictionary> SlovakSpellCheck<T> {
+    /// A spell check that writes its messages in Slovak.
     pub fn new(dictionary: T) -> Self {
+        Self::in_language(dictionary, MessageLanguage::Slovak)
+    }
+
+    /// A spell check that writes its messages in `language`.
+    pub fn in_language(dictionary: T, language: MessageLanguage) -> Self {
         Self {
             dictionary,
             hints: slovak_suggestion_hints(),
+            language,
+        }
+    }
+
+    fn message(&self, word: &str, suggestions: &[Vec<char>]) -> String {
+        if suggestions.is_empty() {
+            return match self.language {
+                MessageLanguage::Slovak => format!("Slovo „{word}“ nie je v slovníku."),
+                MessageLanguage::English => {
+                    format!("The word “{word}” is not in the Slovak dictionary.")
+                }
+            };
+        }
+        let listed: Vec<String> = suggestions
+            .iter()
+            .map(|s| s.iter().collect::<String>())
+            .collect();
+        let listed = listed.join(", ");
+        match self.language {
+            MessageLanguage::Slovak => {
+                format!("Slovo „{word}“ môže byť napísané nesprávne. Mysleli ste: {listed}?")
+            }
+            MessageLanguage::English => {
+                format!("The word “{word}” may be misspelled. Did you mean: {listed}?")
+            }
         }
     }
 
@@ -126,18 +159,7 @@ impl<T: Dictionary> Linter for SlovakSpellCheck<T> {
                     let suggestions = self.get_suggestions(word_chars);
                     let word_str: String = word_chars.iter().collect();
 
-                    let message = if suggestions.is_empty() {
-                        format!("Slovo „{word_str}“ nie je v slovníku.")
-                    } else {
-                        let listed: Vec<String> = suggestions
-                            .iter()
-                            .map(|s| s.iter().collect::<String>())
-                            .collect();
-                        format!(
-                            "Slovo „{word_str}“ môže byť napísané nesprávne. Mysleli ste: {}?",
-                            listed.join(", ")
-                        )
-                    };
+                    let message = self.message(&word_str, &suggestions);
 
                     lints.push(Lint {
                         span: word.span,
@@ -167,6 +189,7 @@ mod tests {
     use harper_core::linting::Linter;
 
     use super::{SlovakSpellCheck, match_capitalization, merge_case_variants};
+    use crate::messages::MessageLanguage;
     use crate::parsers::PlainSlovak;
     use crate::spell::{slovak_dictionary, slovak_suggestion_hints};
 
@@ -184,9 +207,13 @@ mod tests {
     }
 
     fn spell_check_messages(text: &str) -> Vec<String> {
+        spell_check_messages_in(text, MessageLanguage::Slovak)
+    }
+
+    fn spell_check_messages_in(text: &str, language: MessageLanguage) -> Vec<String> {
         let dictionary = slovak_dictionary();
         let document = Document::new(text, &PlainSlovak, &*dictionary);
-        let mut check = SlovakSpellCheck::new(dictionary.clone());
+        let mut check = SlovakSpellCheck::in_language(dictionary.clone(), language);
         check
             .lint(&document)
             .into_iter()
@@ -326,6 +353,22 @@ mod tests {
         assert_eq!(
             messages,
             vec!["Slovo „qxzqxzqxzqxz“ nie je v slovníku.".to_string()]
+        );
+    }
+
+    #[test]
+    fn messages_can_be_english() {
+        let messages = spell_check_messages_in("Dohodli sa nezavisle.", MessageLanguage::English);
+        assert_eq!(messages.len(), 1, "got {messages:?}");
+        assert!(
+            messages[0].starts_with("The word “nezavisle” may be misspelled. Did you mean: "),
+            "got {messages:?}"
+        );
+        let messages =
+            spell_check_messages_in("Dohodli sa qxzqxzqxzqxz.", MessageLanguage::English);
+        assert_eq!(
+            messages,
+            vec!["The word “qxzqxzqxzqxz” is not in the Slovak dictionary.".to_string()]
         );
     }
 }

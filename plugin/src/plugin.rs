@@ -15,6 +15,7 @@ use harper_plugin_api::{
 
 use crate::language_detection::{slovak_confidence, slovak_confidence_given_english};
 use crate::linting::new_curated_slovak;
+use crate::messages::MessageLanguage;
 use crate::parsers::PlainSlovak;
 use crate::spell::slovak_dictionary;
 
@@ -27,6 +28,8 @@ pub struct Slovak {
     dictionary: Arc<MergedDictionary>,
     /// The user's words in `dictionary`, to tell whether a request brings other ones.
     user_words: Vec<String>,
+    /// The language the linters in `group` write their messages in.
+    messages: MessageLanguage,
     group: LintGroup,
 }
 
@@ -92,14 +95,34 @@ impl Slovak {
         let mut merged = MergedDictionary::new();
         merged.add_dictionary(self.base.clone());
         merged.add_dictionary(Arc::new(user));
-        let merged = Arc::new(merged);
-
-        // The linters hold on to the dictionary, so they are rebuilt with the new one. Keep the
-        // rules the user switched off.
-        let config: FlatConfig = self.group.config.clone();
-        self.group = new_curated_slovak(merged.clone()).with_lint_config(config);
-        self.dictionary = merged;
+        // The linters hold on to the dictionary, so they are rebuilt with the new one.
+        self.dictionary = Arc::new(merged);
         self.user_words = words;
+        self.rebuild_linters();
+    }
+
+    /// Write the messages for an interface in the language `tag` (BCP 47, such as `en-GB`):
+    /// Slovak for a Slovak interface, English for any other. `None`, or a tag that is not one,
+    /// goes back to the language of the text.
+    ///
+    /// The plugin API does not pass the interface language yet; this is what a request field
+    /// for it will call.
+    pub fn set_message_language(&mut self, tag: Option<&str>) {
+        let language = tag
+            .and_then(MessageLanguage::for_interface)
+            .unwrap_or_default();
+        if language != self.messages {
+            self.messages = language;
+            self.rebuild_linters();
+        }
+    }
+
+    /// Build the linters again for the current dictionary and message language, keeping the
+    /// rules the user switched off.
+    fn rebuild_linters(&mut self) {
+        let config: FlatConfig = self.group.config.clone();
+        self.group =
+            new_curated_slovak(self.dictionary.clone(), self.messages).with_lint_config(config);
     }
 }
 
@@ -134,11 +157,13 @@ impl LanguagePlugin for Slovak {
         let mut merged = MergedDictionary::new();
         merged.add_dictionary(base.clone());
         let dictionary = Arc::new(merged);
+        let messages = MessageLanguage::default();
         Self {
-            group: new_curated_slovak(dictionary.clone()),
+            group: new_curated_slovak(dictionary.clone(), messages),
             base,
             dictionary,
             user_words: Vec::new(),
+            messages,
         }
     }
 
@@ -231,5 +256,47 @@ mod tests {
         let mut req = LintRequest::plain(text);
         req.user_words = Some(vec!["Qwyrtex".into()]);
         assert!(!flagged(&mut plugin, req));
+    }
+
+    #[test]
+    fn messages_follow_the_interface_language() {
+        let mut plugin = Slovak::new();
+        let text = "Sme stastni. v dnes je pekný deň.";
+        let messages = |plugin: &mut Slovak| -> Vec<String> {
+            let mut lints = plugin.lint(LintRequest::plain(text));
+            lints.sort_by_key(|l| l.span);
+            lints.into_iter().map(|l| l.message).collect()
+        };
+
+        let slovak = messages(&mut plugin);
+        assert_eq!(slovak.len(), 2, "{slovak:?}");
+        assert!(slovak[0].starts_with("Slovo „stastni“"), "{slovak:?}");
+        assert!(slovak[1].starts_with("Správne je"), "{slovak:?}");
+
+        plugin.set_message_language(Some("en-GB"));
+        let english = messages(&mut plugin);
+        assert!(english[0].starts_with("The word “stastni”"), "{english:?}");
+        assert!(
+            english[1].starts_with("The correct phrase is"),
+            "{english:?}"
+        );
+
+        plugin.set_message_language(None);
+        assert_eq!(messages(&mut plugin), slovak);
+    }
+
+    #[test]
+    fn switching_the_message_language_keeps_rules_switched_off() {
+        let mut plugin = Slovak::new();
+        let mut req = LintRequest::plain("v dnes je pekný deň.");
+        req.config = Some([("VDnes".to_string(), Some(false))].into_iter().collect());
+        assert!(plugin.lint(req).iter().all(|l| l.rule != "VDnes"));
+        plugin.set_message_language(Some("en"));
+        assert!(
+            plugin
+                .lint(LintRequest::plain("v dnes je pekný deň."))
+                .iter()
+                .all(|l| l.rule != "VDnes")
+        );
     }
 }

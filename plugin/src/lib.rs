@@ -5,6 +5,7 @@
 
 pub mod language_detection;
 pub mod linting;
+pub mod messages;
 pub mod parsers;
 pub mod plugin;
 pub mod spell;
