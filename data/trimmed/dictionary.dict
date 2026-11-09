@@ -1,4 +1,4 @@
-101121
+101066
 # Slovak dictionary data for Harper — word list.
 # Derived from sk-spell/hunspell-sk <https://github.com/sk-spell/hunspell-sk>
 # by Zdenko Podobný and contributors.
@@ -9,7 +9,7 @@
 # obtain one at <https://mozilla.org/MPL/2.0/>.
 #
 # GENERATED FILE — do not edit by hand. Trimmed from data/dictionary.dict by scripts/apply_plan.py (make trim / make retrim).
-# Source revision: ee4ffc3 (2026-09-25)
+# Source revision: 961b77c (2026-11-08)
 a/i
 á/j
 Á/j
@@ -1441,7 +1441,6 @@ anektovať/Ne
 anémia/a
 anemický/Yd
 anemik
-anemometer
 aneroid/a
 anestetický/Yd
 anestetikum/a
@@ -2529,10 +2528,8 @@ AUD/m
 audícia
 audiencia/a
 audienčný/Yd
-audio
 audiofón
 audiokazeta/a
-audiometer
 audiometria
 audiotechnika/a
 audiotex/a
@@ -9943,7 +9940,6 @@ dialyzovať/e
 diamant/a
 diamantmi
 diamantový/Yd
-diameter
 diametrálny/Yd
 Dián
 Diana/a
@@ -10124,7 +10120,6 @@ diktovať/Ne
 dilatácia/a
 dilatačný/Yd
 dilatátor
-dilatometer
 dilatovať/e
 dilem
 dilema/a
@@ -13918,7 +13913,6 @@ elektromechanický/Yd
 elektromechanik/a
 elektromer/a
 elektromera
-elektrometer
 elektromobil/a
 elektromontér/a
 elektromotor/a
@@ -16243,7 +16237,6 @@ fotokópia/a
 fotokrúžok/a
 fotolaborant/a
 fotolaboratórium/a
-fotometer
 fotometria/a
 fotometrický/Yd
 fotomodelka/a
@@ -16822,7 +16815,6 @@ galvanizácia/a
 galvanizmus/a
 galvanizovaný/Yd
 galvanizovať/e
-galvanometer
 gama/a
 gamaglobulín/a
 gamagrafia
@@ -17372,7 +17364,6 @@ glotový/Yd
 gloxínia
 glukagón
 glukokortikoid
-glukometer
 glukóza/a
 glukózový/Yd
 gluón
@@ -17458,7 +17449,6 @@ gong/a
 gongom
 gongu
 gongy
-goniometer
 goniometrický/Yd
 gonokok
 gonorea
@@ -17606,7 +17596,6 @@ gratulovať/Ne
 grave
 gravidita/a
 gravidný/Yd
-gravimeter
 gravimetrický/Yd
 gravírovací
 gravírovanie/a
@@ -20621,7 +20610,6 @@ hydrolýza/a
 hydrolyzovaný/Yd
 hydrolyzovať/e
 hydrometeorologický/YNd
-hydrometer
 hydroplán/a
 hydropónia
 hydropóniu
@@ -23593,7 +23581,6 @@ jazýčkový/Yd
 jazyčnatý/Yd
 jazyčnica/a
 jazyčný/Yd
-jazyk/a
 jazyka
 jazykoveda/a
 jazykovedcov/Yd
@@ -23603,7 +23590,6 @@ jazykovedný/Y
 jazykovitý/Yd
 jazykovo/f
 jazykový/YNd
-jazyku
 jazylka/a
 jazz/a
 jazzový/YNd
@@ -24529,7 +24515,6 @@ Kalonda
 kalória/a
 kaloricky/f
 kalorický/YNd
-kalorimeter
 kalotypia
 kalový/Yd
 Kalša
@@ -26638,7 +26623,6 @@ kolonoskopia
 kolor
 koloratúra/a
 koloratúrny/Yd
-kolorimeter
 kolorista/a
 kolorit/a
 kolorovanie/a
@@ -31986,7 +31970,6 @@ Luxemburg/a
 Luxemburgu
 Luxembursko/a
 luxemburský/YNd
-luxmeter
 Luxor
 Luxore
 Luxoru
@@ -32251,10 +32234,8 @@ magnetizovanie/a
 magnetizovať/e
 magnetizujúci
 magnetka/a
-magneto
 magnetofón/a
 magnetofónový/YNd
-magnetometer
 magnetometria
 magnetosféra
 magnetoterapia/a
@@ -38279,12 +38260,9 @@ násobok/a
 nasolený/Yd
 nasoliť/e
 násoska/a
-naspal
 naspamäť
-naspať
 naspäť
 naspi
-naspí
 naspievanie/a
 naspievaný/Yd
 naspievať/Ne
@@ -44555,6 +44533,8 @@ okolkovať/e
 okolky/
 okolní
 okolnosť/a
+okolo/f
+okolo/k
 okolo/h
 okoloidúci/YNd
 okolostojaci/YNd
@@ -47007,7 +46987,6 @@ oxygén/a
 oxygenácia/a
 oxygenium
 oxygenoterapia
-oxymeter
 oxymoron/a
 oxytocín/a
 OZ/m
@@ -47067,9 +47046,6 @@ označiť/ENe
 označkovanie/a
 označkovaný/YNd
 označkovať/Ne
-označovacej
-označovací/Yd
-označovacie
 označovanie/Na
 označovaný/YNd
 označovať/WNe
@@ -48996,7 +48972,6 @@ penový/Y�
 Pensylvánia/a
 pentagón/a
 pentalógia/a
-pentameter
 Pentium/a
 pentrit
 penumbra/a
@@ -49014,7 +48989,6 @@ penzum/a
 penzum/a
 Penzy
 peón
-peoplemeter
 pepermint
 pepita
 pepito
@@ -49090,7 +49064,6 @@ perigeum/a
 perikard
 perikarditída
 perikopa/a
-perimeter
 perimetri
 perina/a
 perinák/a
@@ -52551,7 +52524,6 @@ poľutovanie/Na
 poľutovať/Ne
 polverš/a
 polveršový/Yd
-poly
 polyakrylát
 polyamid/a
 polyamidový/Yd
@@ -59429,13 +59401,10 @@ prísnosť/a
 prísny/YNd
 prisoliť/e
 prispájkovať/e
-prispali
-prispať
 prispenie/a
 príspevkovo
 príspevkový/YNd
 príspevok/a
-prispí
 prispieť/WNe
 prispievanie/a
 prispievaný/d
@@ -60755,7 +60724,6 @@ psychotronik/a
 psychotronika/a
 psychotropný/YNd
 psychóza/a
-psychrometer
 PŠC/m
 pšenica/a
 pšenička/a
@@ -61053,7 +61021,6 @@ pyelonefritída
 pygmej
 pýcha/a
 pykať/Ne
-pyknometer
 pylón/a
 pylor
 pýr/a
@@ -61078,7 +61045,6 @@ pyrolýza/a
 pyrolýzny/Yd
 pyroman
 pyrománia
-pyrometer
 pyrotechnický/YNd
 pyrotechnik/a
 pyrotechnika/a
@@ -61252,7 +61218,6 @@ rádiolokačný/Yd
 rádiolokátor/a
 rádiomagnetofón/a
 rádiomaják/a
-rádiometer
 rádiometri
 rádioprijímač/a
 rádiostanica/a
@@ -62330,12 +62295,10 @@ repka/a
 repkový/YNd
 replika/a
 replikácia/a
-Replikačný/Yd
 replikovanie/a
 replikovaný/Yd
 replikovať/e
 repný/Yd
-report
 reportáž/a
 reportážny/Yd
 reportér/a
@@ -69740,7 +69703,6 @@ spirituálny/Y
 spiritus
 Spiritus
 spirochéta
-spirometer
 spis/a
 spísanie/a
 spísaný/YNd
@@ -76803,27 +76765,19 @@ tekvica/a
 tekvicový/YNd
 tekvička/a
 tel
-teľa/a
 teľací/Id
 teľacina/a
 teľacinka/a
 telamon
-teľatá
-teľaťa
-teľatám
 teľatník/a
-teľaťom
-teľaťu
 telavivský/Yd
 teľce/
-teľcom
-telef
 telefax/a
 telefón/a
 telefonát/a
 telefonátmi
 telefónia/a
-telefonicky
+telefonicky/f
 telefonický/YNd
 telefónik/a
 telefonista/a
@@ -76955,7 +76909,6 @@ temrava/a
 temravý/Yd
 Temža/a
 temžský/Yd
-ten
 tén
 tenčiť/e
 tendencia/a
@@ -77001,7 +76954,6 @@ tenúť/e
 tenzia/a
 tenzid
 tenzný/Yd
-tenzometer
 tenzor
 tenže
 teocentrický/Yd
@@ -77180,7 +77132,6 @@ termogenéza
 termograf
 termografia
 termoizolačný/Yd
-termometer
 termonukleárny/Yd
 termoplast/a
 termoreceptor
@@ -77883,7 +77834,6 @@ tónina/a
 Tonino
 tonizovať/e
 Tonka/a
-tonometer
 tónovanie/a
 tónovaný/Yd
 tónovať/e
@@ -84686,7 +84636,6 @@ volovi
 volovina/a
 volský/YNd
 volt/a
-volta
 voltairovský/Yd
 voltižér/a
 voltmeter/a
@@ -85936,7 +85885,6 @@ vyfabrikovaný/Yd
 vyfabrikovať/e
 vyfackať/Ne
 vyfajčenie/a
-vyfajčených
 vyfajčiť/Ne
 vyfakturovaný/Yd
 vyfakturovať/e
@@ -85951,7 +85899,6 @@ vyfasovať/Ne
 vyfénovať/e
 vyfintený/Yd
 vyfintiť
-Vyflákol
 vyfliaskať/e
 vyformovanie/Na
 vyformovaný/YNd
@@ -85986,8 +85933,6 @@ vygumovanie/a
 vygumovaný/Yd
 vygumovať/Ne
 vyháčkovať/e
-vyhádať
-vyhádzaná
 vyhádzať/Ne
 vyhadzov/a
 vyhadzovač/a
