@@ -105,8 +105,7 @@ impl Slovak {
     /// Slovak for a Slovak interface, English for any other. `None`, or a tag that is not one,
     /// goes back to the language of the text.
     ///
-    /// The plugin API does not pass the interface language yet; this is what a request field
-    /// for it will call.
+    /// Called with [`LintRequest::message_language`] on every request.
     pub fn set_message_language(&mut self, tag: Option<&str>) {
         let language = tag
             .and_then(MessageLanguage::for_interface)
@@ -138,8 +137,6 @@ impl LanguagePlugin for Slovak {
             plugin_version: env!("CARGO_PKG_VERSION").into(),
             abi: ABI_VERSION,
             harper_core_version: HARPER_CORE_VERSION.into(),
-            // `dispatch` fills in what the API crate this plugin is built with supports.
-            features: Vec::new(),
             dialects: vec![DialectInfo {
                 id: "Standard".into(),
                 name: "Slovensko".into(),
@@ -168,6 +165,7 @@ impl LanguagePlugin for Slovak {
     }
 
     fn lint(&mut self, req: LintRequest) -> Vec<PluginLint> {
+        self.set_message_language(req.message_language.as_deref());
         if let Some(words) = req.user_words.clone() {
             self.use_user_words(words);
         }
@@ -208,19 +206,11 @@ impl LanguagePlugin for Slovak {
             .collect()
     }
 
-    fn detect(text: &str) -> Option<f32> {
-        slovak_confidence(text)
-    }
-
-    fn detect_with(text: &str, english_ratio: Option<f32>) -> Option<f32> {
+    fn detect(text: &str, english_ratio: Option<f32>) -> Option<f32> {
         match english_ratio {
             Some(ratio) => slovak_confidence_given_english(text, ratio),
-            None => Self::detect(text),
+            None => slovak_confidence(text),
         }
-    }
-
-    fn set_user_words(&mut self, words: Vec<String>) {
-        self.use_user_words(words);
     }
 }
 
@@ -262,27 +252,28 @@ mod tests {
     fn messages_follow_the_interface_language() {
         let mut plugin = Slovak::new();
         let text = "Sme stastni. v dnes je pekný deň.";
-        let messages = |plugin: &mut Slovak| -> Vec<String> {
-            let mut lints = plugin.lint(LintRequest::plain(text));
+        let messages = |plugin: &mut Slovak, language: Option<&str>| -> Vec<String> {
+            let mut req = LintRequest::plain(text);
+            req.message_language = language.map(str::to_owned);
+            let mut lints = plugin.lint(req);
             lints.sort_by_key(|l| l.span);
             lints.into_iter().map(|l| l.message).collect()
         };
 
-        let slovak = messages(&mut plugin);
+        let slovak = messages(&mut plugin, None);
         assert_eq!(slovak.len(), 2, "{slovak:?}");
         assert!(slovak[0].starts_with("Slovo „stastni“"), "{slovak:?}");
         assert!(slovak[1].starts_with("Správne je"), "{slovak:?}");
 
-        plugin.set_message_language(Some("en-GB"));
-        let english = messages(&mut plugin);
+        let english = messages(&mut plugin, Some("en-GB"));
         assert!(english[0].starts_with("The word “stastni”"), "{english:?}");
         assert!(
             english[1].starts_with("The correct phrase is"),
             "{english:?}"
         );
 
-        plugin.set_message_language(None);
-        assert_eq!(messages(&mut plugin), slovak);
+        assert_eq!(messages(&mut plugin, Some("sk")), slovak);
+        assert_eq!(messages(&mut plugin, None), slovak);
     }
 
     #[test]
@@ -291,12 +282,8 @@ mod tests {
         let mut req = LintRequest::plain("v dnes je pekný deň.");
         req.config = Some([("VDnes".to_string(), Some(false))].into_iter().collect());
         assert!(plugin.lint(req).iter().all(|l| l.rule != "VDnes"));
-        plugin.set_message_language(Some("en"));
-        assert!(
-            plugin
-                .lint(LintRequest::plain("v dnes je pekný deň."))
-                .iter()
-                .all(|l| l.rule != "VDnes")
-        );
+        let mut req = LintRequest::plain("v dnes je pekný deň.");
+        req.message_language = Some("en".into());
+        assert!(plugin.lint(req).iter().all(|l| l.rule != "VDnes"));
     }
 }
