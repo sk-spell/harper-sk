@@ -14,8 +14,8 @@ crate-type = ["cdylib", "rlib"]
 [dependencies]
 # Pinned to a revision of the feature/language-plugins branch of Dronakurl/harper, which holds the
 # plugin API (Dronakurl/harper#14) and the harper-core this plugin is built against.
-harper-core = { git = "https://github.com/Dronakurl/harper", rev = "2bf47d8cf407c3159bdb4e7f96a25a81b667b942", default-features = false, features = ["concurrent", "language-bits"] }
-harper-plugin-api = { git = "https://github.com/Dronakurl/harper", rev = "2bf47d8cf407c3159bdb4e7f96a25a81b667b942", features = ["core"] }
+harper-core = { git = "https://github.com/Dronakurl/harper", rev = "1e1646a6dd72538eb6a6102bf481db7c47264901", default-features = false, features = ["concurrent", "language-bits"] }
+harper-plugin-api = { git = "https://github.com/Dronakurl/harper", rev = "1e1646a6dd72538eb6a6102bf481db7c47264901", features = ["core"] }
 fst = "0.4.7"
 hashbrown = { version = "0.16.1", features = ["serde"] }
 serde_json = "1.0.150"
@@ -24,7 +24,7 @@ getrandom02 = { package = "getrandom", version = "0.2", features = ["custom"] }
 getrandom03 = { package = "getrandom", version = "0.3" }
 
 [dev-dependencies]
-harper-plugin-host = { git = "https://github.com/Dronakurl/harper", rev = "2bf47d8cf407c3159bdb4e7f96a25a81b667b942" }
+harper-plugin-host = { git = "https://github.com/Dronakurl/harper", rev = "1e1646a6dd72538eb6a6102bf481db7c47264901" }
 
 [features]
 # Build with the full hunspell-sk word list (data/dictionary.dict) instead of the trimmed one
